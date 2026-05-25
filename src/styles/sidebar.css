@@ -1,0 +1,115 @@
+/* SIDEBAR ROOT */
+.custom-sidebar .ant-layout-sider {
+  background: linear-gradient(
+    180deg,
+    #4f74e8 0%,
+    #456ce5 45%,
+    #3e63db 100%
+  ) !important;
+}
+
+/* MAIN MENU */
+.custom-sidebar .ant-menu {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.88);
+  border-inline-end: none !important;
+}
+
+/* SUB MENU CONTAINER */
+.custom-sidebar .ant-menu-sub {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-radius: 18px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px 0;
+}
+
+/* MENU ITEM */
+.custom-sidebar .ant-menu-item {
+  height: 56px;
+  line-height: 56px;
+  border-radius: 16px;
+  margin-inline: 8px !important;
+  margin-block: 6px !important;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+/* SUBMENU TITLE */
+.custom-sidebar .ant-menu-submenu-title {
+  height: 56px !important;
+  line-height: 56px !important;
+  border-radius: 16px;
+  margin-inline: 8px !important;
+  margin-block: 6px !important;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+/* ACTIVE */
+.custom-sidebar .ant-menu-item-selected {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+/* HOVER */
+.custom-sidebar .ant-menu-item:hover,
+.custom-sidebar .ant-menu-submenu-title:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: white !important;
+}
+
+/* ICON */
+.custom-sidebar .ant-menu-item .anticon,
+.custom-sidebar .ant-menu-submenu-title .anticon {
+  font-size: 20px;
+}
+
+/* SECTION TITLE */
+.custom-sidebar .ant-menu-item-group-title {
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 18px;
+}
+
+/* REMOVE DARK FLASH */
+.custom-sidebar .ant-menu-dark,
+.custom-sidebar .ant-menu-dark .ant-menu-sub {
+  background: transparent !important;
+}
+
+/* src/styles/sidebar.css */
+
+.custom-sidebar .ant-menu-item,
+.custom-sidebar .ant-menu-submenu-title {
+  height: 46px !important;
+  line-height: 46px !important;
+  border-radius: 12px;
+  margin-inline: 6px !important;
+  margin-block: 4px !important;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.custom-sidebar .ant-menu-item .anticon,
+.custom-sidebar .ant-menu-submenu-title .anticon {
+  font-size: 16px;
+}
+
+.custom-sidebar .ant-menu-sub {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 14px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding: 6px 0;
+}
+
+.custom-sidebar .ant-menu-item-group-title {
+  font-size: 12px !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.45) !important;
+}
