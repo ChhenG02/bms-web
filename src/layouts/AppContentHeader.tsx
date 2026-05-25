@@ -2,16 +2,30 @@ import { Typography } from "antd";
 import { useLocation } from "react-router-dom";
 import { navigationItems } from "../data/navigation";
 
-
-
 const { Title } = Typography;
 
 function AppContentHeader() {
   const location = useLocation();
 
-  const currentPage = navigationItems.find(
-    (item) => item.path === location.pathname
-  );
+  function findNavigationItem(items: typeof navigationItems): any {
+    for (const item of items) {
+      if (item.path === location.pathname) {
+        return item;
+      }
+
+      if (item.children) {
+        const found = findNavigationItem(item.children);
+
+        if (found) {
+          return found;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  const currentPage = findNavigationItem(navigationItems);
 
   if (!currentPage) return null;
 

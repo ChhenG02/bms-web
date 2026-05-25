@@ -34,10 +34,10 @@ export const navigationItems: NavigationItem[] = [
     group: "group",
     children: [
       {
-        key: "/attendance",
+        key: "/client",
         label: "អតិថិជន",
-        title: "Attendance",
-        path: "/attendance",
+        title: "អតិថិជន",
+        path: "/client",
         icon: <TeamOutlined />,
       },
       {

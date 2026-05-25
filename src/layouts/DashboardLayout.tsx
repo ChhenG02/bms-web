@@ -17,33 +17,42 @@ function DashboardLayout() {
     <Layout
       style={{
         minHeight: "100vh",
-        background: "#eef3fb",
+        background: "#f6f8fb",
       }}
     >
+      {/* SIDEBAR */}
       <div className="custom-sidebar">
-        <AppSidebar collapsed={collapsed} onCollapse={setCollapsed} />
+        <AppSidebar
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+        />
       </div>
 
-      <Layout>
-        {/* NAVBAR */}
+      {/* MAIN LAYOUT */}
+      <Layout
+        style={{
+          background: "#f6f8fb",
+        }}
+      >
+        {/* TOP NAVBAR */}
         <AppNavbar />
 
+        {/* PAGE CONTENT */}
         <Layout.Content
           style={{
-            padding: 16,
+            padding: 20,
+            background: "#f6f8fb",
           }}
         >
+          <AppContentHeader />
+
           <div
             style={{
-              background: "#ffffff",
-              borderRadius: 18,
-              padding: 20,
-              minHeight: "100%",
-              boxShadow: "0 20px 48px rgba(79, 116, 232, 0.12)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
             }}
           >
-            <AppContentHeader />
-
             <Outlet />
           </div>
         </Layout.Content>
