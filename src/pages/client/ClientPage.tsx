@@ -1,105 +1,35 @@
-import { CheckOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Table, Tag } from "antd";
+import {
+  CheckOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  MoreOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Dropdown, Input, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { buildTablePagination } from "../utils/pagination";
-import ClientModal from "./ClientModal";
 
-type ClientRow = {
-  id: string;
-  key: string;
-  lastDate: string;
-  name: string;
-  newReading: number;
-  oldReading: number;
-  status: "Paid" | "Unpaid";
-  total: string;
-  usage: string;
-};
+import ClientModal from "./ClientModal";
+import { NavLink, useNavigate } from "react-router-dom";
+import { CLIENTS, type ClientRow } from "../../data/clientData";
+import { buildPeopleTablePagination } from "../../utils/pagination";
 
 function ClientPage() {
   const [search, setSearch] = useState("");
 
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const rows: ClientRow[] = [
-    {
-      id: "01",
-      key: "1",
-      name: "ចិន សាវ៉ាត",
-      lastDate: "10 Jan 2021",
-      oldReading: 80,
-      newReading: 120,
-      usage: "40kwh",
-      total: "40,000៛",
-      status: "Unpaid",
-    },
-    {
-      id: "02",
-      key: "2",
-      name: "សុខ សុភ័ណ្ឌ",
-      lastDate: "10 Jan 2021",
-      oldReading: 250,
-      newReading: 300,
-      usage: "75kwh",
-      total: "75,000៛",
-      status: "Paid",
-    },
-    {
-      id: "03",
-      key: "3",
-      name: "ណាត សេង",
-      lastDate: "10 Jan 2021",
-      oldReading: 123,
-      newReading: 200,
-      usage: "77kwh",
-      total: "77,000៛",
-      status: "Paid",
-    },
-    {
-      id: "04",
-      key: "4",
-      name: "លាភ វិមាន",
-      lastDate: "10 Jan 2021",
-      oldReading: 123,
-      newReading: 240,
-      usage: "77kwh",
-      total: "84,700៛",
-      status: "Paid",
-    },
-    {
-      id: "05",
-      key: "5",
-      name: "ស៊ីន មករា",
-      lastDate: "12 Jan 2022",
-      oldReading: 123,
-      newReading: 200,
-      usage: "77kwh",
-      total: "84,700៛",
-      status: "Paid",
-    },
-    {
-      id: "06",
-      key: "6",
-      name: "ប្រាក់ សេង",
-      lastDate: "12 Jan 2022",
-      oldReading: 123,
-      newReading: 200,
-      usage: "77kwh",
-      total: "84,700៛",
-      status: "Paid",
-    },
-  ];
-
   const filteredRows = useMemo(() => {
     if (!debouncedSearch.trim()) {
-      return rows;
+      return CLIENTS;
     }
 
     const keyword = debouncedSearch.toLowerCase();
 
-    return rows.filter((row) => {
+    return CLIENTS.filter((row) => {
       return (
         row.name.toLowerCase().includes(keyword) ||
         row.id.toLowerCase().includes(keyword) ||
@@ -108,13 +38,15 @@ function ClientPage() {
         row.lastDate.toLowerCase().includes(keyword)
       );
     });
-  }, [debouncedSearch, rows]);
+  }, [debouncedSearch, CLIENTS]);
 
   const [page, setPage] = useState(1);
 
   const [pageSize, setPageSize] = useState(5);
 
   const [openModal, setOpenModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const paginatedRows = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -128,6 +60,7 @@ function ClientPage() {
       dataIndex: "id",
       key: "id",
       width: 70,
+
       render: (value: string) => (
         <span
           style={{
@@ -141,44 +74,51 @@ function ClientPage() {
     },
 
     {
-      title: "ឈ្មោះ",
+      title: "ឈ្មោះពេញ",
       dataIndex: "name",
       key: "name",
-      render: (value: string) => (
-        <span
+      width: 220,
+
+      render: (value: string, record) => (
+        <NavLink
+          to={`/client/${record.id}`}
           style={{
             color: "#4f74e8",
             fontWeight: 600,
-            cursor: "pointer",
           }}
         >
           {value}
-        </span>
+        </NavLink>
       ),
     },
 
     {
-      title: "កាលបរិច្ឆេទចុងក្រោយ",
+      title: "កាលបរិច្ឆេទចុះឈ្មោះ",
       dataIndex: "lastDate",
       key: "lastDate",
+      width: 180,
     },
 
     {
-      title: "លេខចាស់",
+      title: "លេខកុងទ័រចាស់",
       dataIndex: "oldReading",
       key: "oldReading",
+      width: 120,
     },
 
     {
-      title: "លេខថ្មី",
+      title: "លេខកុងទ័រថ្មី",
       dataIndex: "newReading",
       key: "newReading",
+      width: 120,
     },
 
     {
-      title: "ចំនួនប្រើប្រាស់",
+      title: "ទំហំប្រើប្រាស់",
       dataIndex: "usage",
       key: "usage",
+      width: 160,
+
       render: (value: string) => (
         <span
           style={{
@@ -195,6 +135,8 @@ function ClientPage() {
       title: "គិតជាទឹកប្រាក់",
       dataIndex: "total",
       key: "total",
+      width: 180,
+
       render: (value: string) => (
         <span
           style={{
@@ -211,7 +153,7 @@ function ClientPage() {
       title: "ស្ថានភាព",
       dataIndex: "status",
       key: "status",
-      width: 170,
+      width: 190,
 
       render: (value: ClientRow["status"]) =>
         value === "Paid" ? (
@@ -220,7 +162,7 @@ function ClientPage() {
             style={{
               borderRadius: 999,
               paddingInline: 12,
-              height: 30,
+              height: 32,
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
@@ -237,7 +179,7 @@ function ClientPage() {
             style={{
               borderRadius: 999,
               paddingInline: 12,
-              height: 30,
+              height: 32,
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
@@ -248,6 +190,66 @@ function ClientPage() {
             ✕ មិនទាន់បង់
           </Tag>
         ),
+    },
+
+    {
+      title: "សកម្មភាព",
+      key: "action",
+      width: 70,
+      align: "center",
+
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "view",
+                icon: <EyeOutlined />,
+                label: "មើល",
+              },
+              {
+                key: "update",
+                icon: <EditOutlined />,
+                label: "កែប្រែ",
+              },
+              {
+                type: "divider",
+              },
+              {
+                key: "delete",
+                icon: <DeleteOutlined />,
+                label: "លុប",
+                danger: true,
+              },
+            ],
+
+            onClick: ({ key }) => {
+              if (key === "view") {
+                navigate(`/client/${record.id}`);
+              }
+
+              if (key === "update") {
+                console.log("update", record);
+              }
+
+              if (key === "delete") {
+                console.log("delete", record);
+              }
+            },
+          }}
+        >
+          <Button
+            type="text"
+            icon={<MoreOutlined />}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+            }}
+          />
+        </Dropdown>
+      ),
     },
   ];
 
@@ -260,16 +262,11 @@ function ClientPage() {
     >
       {/* MAIN CONTENT */}
       <Card
-        bordered={false}
-        style={{
-          borderRadius: 16,
-          border: "1px solid #edf0f5",
-          background: "#ffffff",
-          boxShadow: "none",
-          overflow: "hidden",
-        }}
-        bodyStyle={{
-          padding: 0,
+        variant="borderless"
+        styles={{
+          body: {
+            padding: 0,
+          },
         }}
       >
         {/* TOOLBAR */}
@@ -323,7 +320,8 @@ function ClientPage() {
           <Table<ClientRow>
             columns={columns}
             dataSource={paginatedRows}
-            pagination={buildTablePagination({
+            scroll={{ x: 1200 }}
+            pagination={buildPeopleTablePagination({
               page,
               pageSize,
               total: filteredRows.length,
@@ -370,8 +368,8 @@ function ClientPage() {
             border-bottom: 1px solid #f3f4f6 !important;
             color: #6b7280;
             font-size: 14px;
-            padding-top: 16px !important;
-            padding-bottom: 16px !important;
+            padding-top: 12px !important;
+            padding-bottom: 12px !important;
           }
 
           .ant-table-tbody > tr:nth-child(odd) > td {

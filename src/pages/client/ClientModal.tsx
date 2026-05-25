@@ -1,6 +1,6 @@
 import { Button, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
-import { khmerDatePickerLocale } from "../utils/datePickerKhmer";
-import { requiredLabel } from "../utils/requiredLabel";
+import { khmerDatePickerLocale } from "../../utils/datePickerKhmer";
+import { requiredLabel } from "../../utils/requiredLabel";
 
 export type ClientFormValues = {
   address?: string;
@@ -47,7 +47,7 @@ function ClientModal({
       }
       onCancel={onCancel}
       footer={null}
-      destroyOnClose
+      destroyOnHidden
       centered
       width={1200}
     >
