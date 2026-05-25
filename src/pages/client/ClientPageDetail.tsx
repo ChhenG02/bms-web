@@ -20,6 +20,9 @@ import { NavLink, useParams } from "react-router-dom";
 import { CLIENTS } from "../../data/clientData";
 import { buildHistoryTablePagination } from "../../utils/pagination";
 
+import InvoiceTemplate from "../../components/InvoiceTemplate";
+import { handlePreviewPDF } from "../../utils/handlePreviewPDF";
+
 const { Title, Text } = Typography;
 
 type BillHistoryRow = {
@@ -41,6 +44,8 @@ function ClientPageDetail() {
   if (!client) {
     return <div>Client not found</div>;
   }
+
+
 
   const rows = client.histories;
 
@@ -155,6 +160,13 @@ function ClientPageDetail() {
           style={{
             color: "#4f74e8",
           }}
+          onClick={() =>
+  handlePreviewPDF({
+    elementId: "invoice-pdf",
+
+    filename: `invoice-${client.id}.pdf`,
+  })
+}
         />
       ),
     },
@@ -311,6 +323,16 @@ function ClientPageDetail() {
           />
         </Space>
       </Card>
+
+      <div
+        style={{
+          position: "fixed",
+          left: "-99999px",
+          top: 0,
+        }}
+      >
+        <InvoiceTemplate client={client} />
+      </div>
 
       {/* LOCAL STYLE */}
       <style>
