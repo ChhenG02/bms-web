@@ -285,7 +285,11 @@ function DashboardPage() {
             borderRadius: 12,
             boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
           }}
-          bodyStyle={{ padding: "16px 20px" }}
+          styles={{
+            body: {
+              padding: "16px 20px",
+            },
+          }}
           title={
             <span style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>
               ទំហំថាមពលដែលបានប្រើប្រាស់ប្រចាំខែ{" "}
@@ -309,7 +313,11 @@ function DashboardPage() {
             borderRadius: 12,
             boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
           }}
-          bodyStyle={{ padding: "16px 20px" }}
+          styles={{
+            body: {
+              padding: "16px 20px",
+            },
+          }}
           title={
             <span style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>
               របាយការណ៍តាមដានអតិថិជន {/* Customer distribution */}

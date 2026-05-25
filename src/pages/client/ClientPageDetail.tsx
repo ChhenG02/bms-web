@@ -292,7 +292,7 @@ function ClientPageDetail() {
         }}
       >
         <Space
-          direction="vertical"
+          orientation="vertical"
           size={20}
           style={{
             width: "100%",
