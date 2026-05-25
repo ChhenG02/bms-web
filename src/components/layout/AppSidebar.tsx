@@ -1,14 +1,8 @@
-import {
-  DesktopOutlined,
-  RiseOutlined,
-  SettingOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import { Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { navigationItems } from "../../data/navigation";
 
 const { Sider } = Layout;
 
@@ -31,68 +25,30 @@ function AppSidebar({ collapsed }: AppSidebarProps) {
     }
   }, [location.pathname]);
 
-  const items: MenuProps["items"] = [
-    {
-      key: "/dashboard",
-      icon: <DesktopOutlined />,
-      label: <NavLink to="/dashboard">ផ្ទាំងគ្រប់គ្រង</NavLink>,
-    },
+  const buildMenuItems = (
+    items: typeof navigationItems,
+  ): MenuProps["items"] => {
+    return items.map((item) => {
+      if (item.group) {
+        return {
+          type: "group",
+          label: item.label,
+          children: buildMenuItems(item.children || []),
+        };
+      }
 
-    {
-      type: "divider",
-    },
-
-    {
-      type: "group",
-      label: "គ្រប់គ្រងព័ត៌មាន",
-      children: [
-        {
-          key: "/attendance",
-          icon: <TeamOutlined />,
-          label: <NavLink to="/attendance">អតិថិជន</NavLink>,
-        },
-
-        {
-          key: "/reports",
-          icon: <RiseOutlined />,
-          label: <NavLink to="/reports">ទំហំថាមពលប្រើប្រាស់</NavLink>,
-        },
-      ],
-    },
-
-    {
-      type: "divider",
-    },
-
-    {
-      type: "group",
-      label: "រដ្ឋបាល",
-      children: [
-        {
-          key: "employee-management",
-          icon: <UserOutlined />,
-          label: "អ្នកប្រើប្រាស់",
-          children: [
-            {
-              key: "/users",
-              // icon: <TeamOutlined />,
-              label: <NavLink to="/users">គ្រប់គ្រងអ្នកប្រើប្រាស់</NavLink>,
-            },
-            {
-              key: "/departments",
-              // icon: <RiseOutlined />,
-              label: <NavLink to="/departments">តួនាទី​ & សិទ្ធិ</NavLink>,
-            },
-          ],
-        },
-        {
-          key: "/settings",
-          icon: <SettingOutlined />,
-          label: <NavLink to="/settings">ការកំណត់</NavLink>,
-        },
-      ],
-    },
-  ];
+      return {
+        key: item.key,
+        icon: item.icon,
+        label: item.path ? (
+          <NavLink to={item.path}>{item.label}</NavLink>
+        ) : (
+          item.label
+        ),
+        children: item.children ? buildMenuItems(item.children) : undefined,
+      };
+    });
+  };
 
   return (
     <Sider
@@ -161,7 +117,7 @@ function AppSidebar({ collapsed }: AppSidebarProps) {
 
       <Menu
         inlineCollapsed={collapsed}
-        items={items}
+        items={buildMenuItems(navigationItems)}
         mode="inline"
         openKeys={collapsed ? [] : openKeys}
         onOpenChange={(keys) => setOpenKeys(keys as string[])}

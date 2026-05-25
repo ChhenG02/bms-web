@@ -8,6 +8,7 @@ import AppNavbar from "../components/layout/AppNavbar";
 import AppSidebar from "../components/layout/AppSidebar";
 
 import "../styles/sidebar.css";
+import AppContentHeader from "./AppContentHeader";
 
 function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -41,6 +42,8 @@ function DashboardLayout() {
               boxShadow: "0 20px 48px rgba(79, 116, 232, 0.12)",
             }}
           >
+            <AppContentHeader />
+
             <Outlet />
           </div>
         </Layout.Content>
