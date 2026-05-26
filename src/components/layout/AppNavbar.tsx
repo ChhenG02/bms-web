@@ -3,8 +3,10 @@ import { Avatar, Dropdown, Space, Typography } from "antd";
 import type { MenuProps } from "antd";
 
 import avatarImage from "../../assets/avatar.png";
+import { useNavigate } from "react-router-dom";
 
 function AppNavbar() {
+  const navigate = useNavigate();
   const items: MenuProps["items"] = [
     {
       key: "profile",
@@ -38,7 +40,18 @@ function AppNavbar() {
       <div className="topbar__right">
         <Dropdown
           arrow
-          menu={{ items }}
+          menu={{
+            items,
+            onClick: ({ key }) => {
+              if (key === "profile") {
+                navigate("/profile");
+              }
+
+              if (key === "logout") {
+                console.log("logout");
+              }
+            },
+          }}
           placement="bottomRight"
           trigger={["click"]}
         >
@@ -66,7 +79,7 @@ function AppNavbar() {
                     fontSize: 14,
                   }}
                 >
-                  Super Admin
+                  Sokchan
                 </Typography.Text>
 
                 <Typography.Text
@@ -75,7 +88,7 @@ function AppNavbar() {
                     fontSize: 12,
                   }}
                 >
-                  Administrator
+                  Admin
                 </Typography.Text>
               </div>
 

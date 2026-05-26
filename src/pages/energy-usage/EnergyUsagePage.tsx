@@ -24,8 +24,8 @@ import type { ColumnsType } from "antd/es/table";
 import ReactECharts from "echarts-for-react";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { CLIENTS, type ClientStatus } from "../data/clientData";
-import { buildEnergyUsageTablePagination } from "../utils/pagination";
+import { CLIENTS, type ClientStatus } from "../../data/clientData";
+import { buildEnergyUsageTablePagination } from "../../utils/pagination";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES

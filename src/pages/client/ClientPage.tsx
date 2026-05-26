@@ -12,7 +12,7 @@ import type { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-import ClientModal from "./ClientModal";
+import ClientModal from "./ClientForm";
 import { NavLink, useNavigate } from "react-router-dom";
 import { CLIENTS, type ClientRow } from "../../data/clientData";
 import { buildPeopleTablePagination } from "../../utils/pagination";

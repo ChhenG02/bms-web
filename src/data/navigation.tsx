@@ -57,33 +57,35 @@ export const navigationItems: NavigationItem[] = [
     group: "group",
     children: [
       {
-        key: "employee-management",
+        key: "/users",
         label: "អ្នកប្រើប្រាស់",
-        title: "User Management",
+        title: "អ្នកប្រើប្រាស់",
+        path: "/users",
         icon: <UserOutlined />,
-        children: [
-          {
-            key: "/users",
-            label: "គ្រប់គ្រងអ្នកប្រើប្រាស់",
-            title: "Users",
-            path: "/users",
-          },
-          {
-            key: "/departments",
-            label: "តួនាទី​ & សិទ្ធិ",
-            title: "Departments",
-            path: "/departments",
-          },
-        ],
+        // children: [
+        //   {
+        //     key: "/users",
+        //     label: "គ្រប់គ្រងអ្នកប្រើប្រាស់",
+        //     title: "អ្នកប្រើប្រាស់",
+        //     path: "/users",
+        //   },
+        //   {
+        //     key: "/permissions",
+        //     label: "តួនាទី​ & សិទ្ធិ",
+        //     title: "តួនាទី & សិទ្ធិ",
+        //     path: "/permissions",
+        //   },
+        // ],
       },
 
-      {
+      
+    ],
+  },
+  {
         key: "/settings",
         label: "ការកំណត់",
-        title: "Settings",
+        title: "ការកំណត់",
         path: "/settings",
         icon: <SettingOutlined />,
       },
-    ],
-  },
 ];

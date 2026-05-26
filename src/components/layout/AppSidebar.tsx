@@ -1,6 +1,6 @@
 import { Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { navigationItems } from "../../data/navigation";
 
@@ -16,14 +16,14 @@ function AppSidebar({ collapsed }: AppSidebarProps) {
 
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (
-      location.pathname.includes("/users") ||
-      location.pathname.includes("/departments")
-    ) {
-      setOpenKeys(["employee-management"]);
-    }
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   if (
+  //     location.pathname.includes("/users") ||
+  //     location.pathname.includes("/permissions")
+  //   ) {
+  //     setOpenKeys(["user-management"]);
+  //   }
+  // }, [location.pathname]);
 
   const buildMenuItems = (
     items: typeof navigationItems,
