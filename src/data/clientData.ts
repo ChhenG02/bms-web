@@ -21,6 +21,8 @@ export type ClientRow = {
   name: string;
   gender: string;
 
+  phoneNumber: string;
+
   installDate: string;
   lastDate: string;
 
@@ -46,7 +48,9 @@ export const CLIENTS: ClientRow[] = [
     meterCode: "00019292",
 
     name: "ចិន សាវ៉ាត",
+
     gender: "ប្រុស",
+    phoneNumber: "012 345 444",
 
     installDate: "12 Jan 2020",
     lastDate: "10 Jan 2021",
@@ -96,6 +100,8 @@ export const CLIENTS: ClientRow[] = [
     name: "សុខ សុភ័ណ្ឌ",
     gender: "ស្រី",
 
+    phoneNumber: "012 345 444",
+
     installDate: "15 Feb 2020",
     lastDate: "10 Jan 2021",
 
@@ -131,6 +137,8 @@ export const CLIENTS: ClientRow[] = [
 
     name: "ណាត សេង",
     gender: "ប្រុស",
+
+    phoneNumber: "012 345 444",
 
     installDate: "20 Mar 2020",
     lastDate: "10 Jan 2021",
@@ -169,6 +177,8 @@ export const CLIENTS: ClientRow[] = [
     name: "លាភ វិមាន",
     gender: "ស្រី",
 
+    phoneNumber: "012 345 444",
+
     installDate: "18 Apr 2020",
     lastDate: "10 Jan 2021",
 
@@ -206,6 +216,8 @@ export const CLIENTS: ClientRow[] = [
     name: "ស៊ីន មករា",
     gender: "ប្រុស",
 
+    phoneNumber: "012 345 444",
+
     installDate: "10 Jun 2020",
     lastDate: "12 Jan 2022",
 
@@ -242,6 +254,8 @@ export const CLIENTS: ClientRow[] = [
 
     name: "ប្រាក់ សេង",
     gender: "ប្រុស",
+
+    phoneNumber: "012 345 444",
 
     installDate: "22 Aug 2020",
     lastDate: "12 Jan 2022",

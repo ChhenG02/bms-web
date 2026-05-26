@@ -21,7 +21,9 @@ import { CLIENTS } from "../../data/clientData";
 import { buildHistoryTablePagination } from "../../utils/pagination";
 
 import InvoiceTemplate from "../../components/InvoiceTemplate";
-import { handlePreviewPDF } from "../../utils/handlePreviewPDF";
+import { useState } from "react";
+import { generatePDFBlobUrl } from "../../utils/handlePreviewPDF";
+import PDFPreviewOverlay from "../../utils/PDFPreviewOverlay";
 
 const { Title, Text } = Typography;
 
@@ -39,13 +41,15 @@ type BillHistoryRow = {
 function ClientPageDetail() {
   const { id } = useParams();
 
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const [pdfUrl, setPdfUrl] = useState<string>();
+
   const client = CLIENTS.find((item) => item.id === id);
 
   if (!client) {
     return <div>Client not found</div>;
   }
-
-
 
   const rows = client.histories;
 
@@ -160,13 +164,17 @@ function ClientPageDetail() {
           style={{
             color: "#4f74e8",
           }}
-          onClick={() =>
-  handlePreviewPDF({
-    elementId: "invoice-pdf",
+          onClick={async () => {
+            const url = await generatePDFBlobUrl({
+              elementId: "invoice-pdf",
+            });
 
-    filename: `invoice-${client.id}.pdf`,
-  })
-}
+            if (!url) return;
+
+            setPdfUrl(url);
+
+            setPreviewOpen(true);
+          }}
         />
       ),
     },
@@ -323,6 +331,22 @@ function ClientPageDetail() {
           />
         </Space>
       </Card>
+
+      <PDFPreviewOverlay
+        open={previewOpen}
+        pdfUrl={pdfUrl}
+        title={`INV-${client.clientCode}-${client.name}-${client.installDate.replaceAll(
+          " ",
+          "-",
+        )}.pdf`}
+        onClose={() => {
+          setPreviewOpen(false);
+
+          if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+          }
+        }}
+      />
 
       <div
         style={{

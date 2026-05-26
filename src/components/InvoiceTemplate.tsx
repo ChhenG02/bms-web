@@ -1,23 +1,44 @@
 import Logo from "../assets/patech.png";
 
+import type { BillHistory, ClientRow } from "../data/clientData";
+
 type Props = {
-  client: any;
+  client: ClientRow;
 };
 
 function InvoiceTemplate({ client }: Props) {
-  const rows =
-    client.histories && client.histories.length > 0
+  // fallback if no histories
+  const rows: BillHistory[] =
+    client.histories?.length > 0
       ? client.histories
       : [
           {
+            key: `${client.id}-history-1`,
+
             no: "01",
+
             dateRange: `${client.installDate} - ${client.lastDate}`,
+
+            oldReading: client.oldReading,
+
+            newReading: client.newReading,
+
             usage: client.usage,
+
             total: client.total,
+
+            status: client.status,
           },
         ];
 
-  const grandTotal = rows[rows.length - 1]?.total ?? "";
+  // dynamic total
+  const grandTotal = rows.reduce((sum, row) => {
+    const amount = Number(row.total.replace(/[^\d]/g, ""));
+
+    return sum + amount;
+  }, 0);
+
+  const formattedGrandTotal = `${grandTotal.toLocaleString()}៛`;
 
   return (
     <div
@@ -33,7 +54,7 @@ function InvoiceTemplate({ client }: Props) {
         boxSizing: "border-box",
       }}
     >
-      {/* ── TOP BAR: Logo left | INVOICE right ── */}
+      {/* ───────────────── HEADER ───────────────── */}
       <div
         style={{
           display: "flex",
@@ -45,59 +66,101 @@ function InvoiceTemplate({ client }: Props) {
         <img
           src={Logo}
           alt="PATech logo"
-          style={{ width: 130, display: "block" }}
-        />
-        <h1
           style={{
-            color: "#4f74e8",
-            margin: 0,
-            fontSize: 28,
-            fontWeight: 700,
-            letterSpacing: 1,
+            width: 130,
+            display: "block",
           }}
-        >
-          INVOICE
-        </h1>
+        />
       </div>
 
-      {/* ── HEADER INFO ── */}
+      {/* ───────────────── INFO ───────────────── */}
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 20,
+          flexDirection: "column",
+          gap: 18,
+          marginBottom: 28,
         }}
       >
-        {/* Left – Company */}
-        <div style={{ lineHeight: "2" }}>
-          <div>
-            <span style={{ fontWeight: 700 }}>ក្រុមហ៊ុន</span>
-            {"៖ ពិស្ណុ អូតូ ថេក​ ឯ.ក"}
+        {/* ROW 1 */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 40,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <InfoRow label="ក្រុមហ៊ុន" value="ពិស្ណុ អូតូ ថេក ឯ.ក" />
           </div>
-          <div>
-            <span style={{ fontWeight: 700 }}>អាសយដ្ឋាន</span>
-            {"៖ #330 ផ្លូវបេតុង ភូមិបន្លាស្អិត សង្កាត់ឃ្មួញ ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ"}
+
+          <h2
+            style={{
+              color: "#4f74e8",
+              margin: 0,
+              fontSize: 24,
+              fontWeight: 700,
+              letterSpacing: 1,
+              lineHeight: 1,
+              minWidth: 220,
+              textAlign: "right",
+            }}
+          >
+            INVOICE
+          </h2>
+        </div>
+
+        {/* ROW 2 */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 40,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <InfoRow
+              label="អាសយដ្ឋាន"
+              value="#330 ផ្លូវបេតុង ភូមិបន្លាស្អិត សង្កាត់ឃ្មួញ ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ"
+              multiline
+            />
           </div>
-          <div>
-            <span style={{ fontWeight: 700 }}>នំនាក់នំនង</span>
-            {"៖ 077 999 316"}
+
+          <div
+            style={{
+              minWidth: 220,
+            }}
+          >
+            <RightInfoRow label="អតិថិជន" value={client.name} />
           </div>
         </div>
 
-        {/* Right – Client */}
-        <div style={{ lineHeight: "2", textAlign: "right" }}>
-          <div>
-            <span style={{ fontWeight: 700 }}>អតិថិជន</span>
-            {"៖ " + client.name}
+        {/* ROW 3 */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 40,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <InfoRow label="ទំនាក់ទំនង" value="077 999 316" />
           </div>
-          <div>
-            <span style={{ fontWeight: 700 }}>នំនាក់នំនង</span>
-            {"៖ 012 999 123"}
+
+          <div
+            style={{
+              minWidth: 220,
+            }}
+          >
+            <RightInfoRow label="ទំនាក់ទំនង" value={client.phoneNumber} />
           </div>
         </div>
       </div>
 
-      {/* ── TABLE ── */}
+      {/* ───────────────── TABLE ───────────────── */}
       <table
         style={{
           width: "100%",
@@ -107,61 +170,122 @@ function InvoiceTemplate({ client }: Props) {
         }}
       >
         <thead>
-          <tr style={{ backgroundColor: "#c5cff5" }}>
-            <th style={{ ...th, width: 50 }}>លស</th>
+          <tr
+            style={{
+              backgroundColor: "#c5cff5",
+            }}
+          >
+            <th
+              style={{
+                ...th,
+                width: 60,
+              }}
+            >
+              ល.រ
+            </th>
+
             <th style={th}>ពិពណ៌នា</th>
-            <th style={{ ...th, width: 160 }}>ចំនួនគិតដែលប្រើប្រាស់</th>
-            <th style={{ ...th, width: 130 }}>ទឹកប្រាក់</th>
+
+            <th
+              style={{
+                ...th,
+                width: 170,
+              }}
+            >
+              ទំហំអគ្គិសនីដែលប្រើប្រាស់
+            </th>
+
+            <th
+              style={{
+                ...th,
+                width: 140,
+              }}
+            >
+              ទឹកប្រាក់
+            </th>
           </tr>
         </thead>
 
         <tbody>
-          {rows.map((row: any, i: number) => (
-            <tr key={i}>
-              <td style={{ ...td, textAlign: "center" }}>
-                {row.no ?? String(i + 1).padStart(2, "0")}
+          {rows.map((row, index) => (
+            <tr key={`${client.id}-${index}`}>
+              <td
+                style={{
+                  ...td,
+                  textAlign: "center",
+                }}
+              >
+                {row.no ?? String(index + 1).padStart(2, "0")}
               </td>
+
               <td style={td}>
                 {`ទូទាត់សេវាអគ្គិសនីដែលបានប្រើប្រាស់ចាប់ពី ${row.dateRange}`}
               </td>
-              <td style={{ ...td, textAlign: "center" }}>{row.usage}</td>
-              <td style={{ ...td, textAlign: "right" }}>{row.total}</td>
+
+              <td
+                style={{
+                  ...td,
+                }}
+              >
+                {row.usage}
+              </td>
+
+              <td
+                style={{
+                  ...td,
+                  fontWeight: 600,
+                }}
+              >
+                {row.total}
+              </td>
             </tr>
           ))}
 
-          {/* Spacer row */}
+          {/* EMPTY ROW */}
           <tr>
-            <td style={{ ...td, height: 32 }} colSpan={4}></td>
-          </tr>
-
-          {/* Total row */}
-          <tr>
-            <td style={{ ...td, borderRight: "none" }} colSpan={2}></td>
             <td
               style={{
                 ...td,
-                textAlign: "center",
+                height: 36,
+              }}
+              colSpan={4}
+            />
+          </tr>
+
+          {/* TOTAL */}
+          <tr>
+            <td
+              style={{
+                ...td,
+                borderRight: "none",
+              }}
+              colSpan={2}
+            />
+
+            <td
+              style={{
+                ...td,
                 fontWeight: 700,
                 backgroundColor: "#f3f4f6",
               }}
             >
               សរុប
             </td>
+
             <td
               style={{
                 ...td,
-                textAlign: "right",
                 fontWeight: 700,
                 backgroundColor: "#f3f4f6",
               }}
             >
-              {grandTotal}
+              {formattedGrandTotal}
             </td>
           </tr>
         </tbody>
       </table>
 
-      {/* ── FOOTER NAMES ── */}
+      {/* ───────────────── FOOTER ───────────────── */}
       <div
         style={{
           display: "flex",
@@ -171,50 +295,138 @@ function InvoiceTemplate({ client }: Props) {
         }}
       >
         <div>
-          <span style={{ fontWeight: 700 }}>តេវ្យរោម</span>
-          {"៖ ក្រុមហ៊ុនពិស្នុកអ៊ីននឺនេត"}
+          <span
+            style={{
+              fontWeight: 700,
+            }}
+          >
+            ចេញដោយ:
+          </span>{" "}
+          <span>ពិស្ណុ អូតូ ថេក ឯ.ក</span>
         </div>
+
         <div>
-          <span style={{ fontWeight: 700 }}>អតិថិជន</span>
-          {"៖ " + client.name}
+          <span
+            style={{
+              fontWeight: 700,
+            }}
+          >
+            អតិថិជន:
+          </span>{" "}
+          <span>{client.name}</span>
         </div>
       </div>
 
-      {/* ── SIGNATURES ── */}
+      {/* ───────────────── SIGNATURES ───────────────── */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
+          marginTop: 32,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontWeight: 700 }}>ហត្ថលេខា:</span>
-          <span
-            style={{
-              display: "inline-block",
-              width: 130,
-              borderBottom: "1.5px solid #374151",
-              marginLeft: 4,
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontWeight: 700 }}>ហត្ថលេខា:</span>
-          <span
-            style={{
-              display: "inline-block",
-              width: 130,
-              borderBottom: "1.5px solid #374151",
-              marginLeft: 4,
-            }}
-          />
-        </div>
+        <SignatureLine />
+        <SignatureLine />
       </div>
     </div>
   );
 }
 
-// Shared cell styles
+/* ───────────────── COMPONENTS ───────────────── */
+
+type InfoRowProps = {
+  label: string;
+  value: string;
+  multiline?: boolean;
+};
+
+function InfoRow({ label, value, multiline = false }: InfoRowProps) {
+  return (
+    <div
+      style={{
+        maxWidth: multiline ? 420 : "100%",
+        lineHeight: multiline ? 1.7 : 1.5,
+      }}
+    >
+      <span
+        style={{
+          fontWeight: 700,
+        }}
+      >
+        {label}:
+      </span>{" "}
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function RightInfoRow({
+  label,
+  value,
+}: InfoRowProps) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns:
+          "110px auto",
+        columnGap: 8,
+        alignItems: "center",
+        justifyContent: "end",
+      }}
+    >
+      <span
+        style={{
+          fontWeight: 700,
+          textAlign: "right",
+        }}
+      >
+        {label}:
+      </span>
+
+      <span
+        style={{
+          textAlign: "right",
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function SignatureLine() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-end",
+        gap: 8,
+      }}
+    >
+      <span
+        style={{
+          fontWeight: 700,
+          paddingBottom: 2,
+        }}
+      >
+        ហត្ថលេខា:
+      </span>
+
+      <span
+        style={{
+          display: "inline-block",
+          width: 150,
+          borderBottom: "1.5px solid #374151",
+          height: 20,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ───────────────── STYLES ───────────────── */
+
 const th: React.CSSProperties = {
   border: "1px solid #d1d5db",
   padding: "8px 10px",

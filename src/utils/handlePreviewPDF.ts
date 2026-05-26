@@ -1,32 +1,25 @@
 import html2canvas from "html2canvas";
-
 import jsPDF from "jspdf";
 
-type HandlePreviewPDFProps = {
+type GeneratePDFProps = {
   elementId: string;
-
-  filename: string;
 };
 
-export async function handlePreviewPDF({
+export async function generatePDFBlobUrl({
   elementId,
-
-//   filename,
-}: HandlePreviewPDFProps) {
+}: GeneratePDFProps) {
   const element =
     document.getElementById(elementId);
 
-  if (!element) return;
+  if (!element) return null;
 
-  const canvas = await html2canvas(element, {
-    scale: 2,
-
-    useCORS: true,
-
-    backgroundColor: "#ffffff",
-
-    windowWidth: 794,
-  });
+  const canvas =
+    await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      windowWidth: 794,
+    });
 
   const imgData =
     canvas.toDataURL("image/png");
@@ -57,11 +50,5 @@ export async function handlePreviewPDF({
 
   const blob = pdf.output("blob");
 
-  const url = URL.createObjectURL(blob);
-
-  window.open(url, "_blank");
-
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 1000);
+  return URL.createObjectURL(blob);
 }
