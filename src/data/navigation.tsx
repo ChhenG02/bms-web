@@ -41,10 +41,10 @@ export const navigationItems: NavigationItem[] = [
         icon: <TeamOutlined />,
       },
       {
-        key: "/reports",
+        key: "/energy-usage",
         label: "ទំហំថាមពលប្រើប្រាស់",
-        title: "Reports",
-        path: "/reports",
+        title: "របាយការណ៍",
+        path: "/energy-usage",
         icon: <BarChartOutlined />,
       },
     ],

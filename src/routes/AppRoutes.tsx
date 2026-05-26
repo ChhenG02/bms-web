@@ -8,9 +8,9 @@ import ClientPageDetail from "../pages/client/ClientPageDetail";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 
 import DepartmentsPage from "../pages/DepartmentsPage";
-import ReportsPage from "../pages/ReportsPage";
 import SettingsPage from "../pages/SettingsPage";
 import UsersPage from "../pages/UsersPage";
+import EnergyUsagePage from "../pages/EnergyUsagePage";
 
 function AppRoutes() {
   return (
@@ -31,8 +31,8 @@ function AppRoutes() {
         <Route path="client" element={<ClientPage />} />
         <Route path="client/:id" element={<ClientPageDetail />} />
 
-        {/* REPORTS */}
-        <Route path="reports" element={<ReportsPage />} />
+        {/* ENERGY USAGE */}
+        <Route path="energy-usage" element={< EnergyUsagePage />} />
 
         {/* SETTINGS */}
         <Route path="settings" element={<SettingsPage />} />
