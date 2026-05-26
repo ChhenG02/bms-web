@@ -7,7 +7,7 @@ import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Dropdown, Input, Table, Tag } from "antd";
+import { App, Button, Card, Dropdown, Input, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -45,8 +45,11 @@ function ClientPage() {
   const [pageSize, setPageSize] = useState(5);
 
   const [openModal, setOpenModal] = useState(false);
+  const [editingClient, setEditingClient] = useState<ClientRow | null>(null);
 
   const navigate = useNavigate();
+
+  const { modal } = App.useApp();
 
   const paginatedRows = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -230,11 +233,31 @@ function ClientPage() {
               }
 
               if (key === "update") {
-                console.log("update", record);
+                setEditingClient(record);
+                setOpenModal(true);
               }
 
               if (key === "delete") {
-                console.log("delete", record);
+                modal.confirm({
+                  title: "បញ្ជាក់ការលុប",
+                  content: (
+                    <span>
+                      តើអ្នកពិតជាចង់លុប <strong>{record.name}</strong> មែនទេ?
+                    </span>
+                  ),
+                  okText: "លុប",
+                  cancelText: "បោះបង់",
+
+                  okButtonProps: {
+                    danger: true,
+                  },
+
+                  centered: true,
+
+                  onOk() {
+                    console.log("delete", record);
+                  },
+                });
               }
             },
           }}
@@ -305,7 +328,10 @@ function ClientPage() {
             type="primary"
             icon={<PlusOutlined />}
             size="large"
-            onClick={() => setOpenModal(true)}
+            onClick={() => {
+              setEditingClient(null);
+              setOpenModal(true);
+            }}
           >
             បង្កើតថ្មី
           </Button>
@@ -338,12 +364,21 @@ function ClientPage() {
 
       <ClientModal
         open={openModal}
-        title="បង្កើតអតិថិជន"
-        onCancel={() => setOpenModal(false)}
+        title={editingClient ? "កែប្រែអតិថិជន" : "បង្កើតអតិថិជន"}
+        initialValues={editingClient || undefined}
+        onCancel={() => {
+          setOpenModal(false);
+          setEditingClient(null);
+        }}
         onSubmit={(values) => {
-          console.log(values);
+          if (editingClient) {
+            console.log("update", values);
+          } else {
+            console.log("create", values);
+          }
 
           setOpenModal(false);
+          setEditingClient(null);
         }}
       />
 

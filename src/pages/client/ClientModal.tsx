@@ -1,6 +1,7 @@
 import { Button, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
-import { khmerDatePickerLocale } from "../../utils/datePickerKhmer";
+// import { khmerDatePickerLocale } from "../../utils/datePickerKhmer";
 import { requiredLabel } from "../../utils/requiredLabel";
+import dayjs from "dayjs";
 
 export type ClientFormValues = {
   address?: string;
@@ -20,6 +21,8 @@ type ClientModalProps = {
   onSubmit: (values: ClientFormValues) => void;
   open: boolean;
   title: string;
+
+  initialValues?: Partial<ClientFormValues>;
 };
 
 function ClientModal({
@@ -28,6 +31,7 @@ function ClientModal({
   loading,
   onCancel,
   onSubmit,
+  initialValues,
 }: ClientModalProps) {
   const [form] = Form.useForm();
 
@@ -64,6 +68,12 @@ function ClientModal({
         initialValues={{
           customerCode: "NP03930",
           status: "Paid",
+
+          ...initialValues,
+
+          installDate: initialValues?.installDate
+            ? dayjs(initialValues.installDate, "DD MMM YYYY")
+            : undefined,
         }}
         style={{
           marginTop: 28,
@@ -105,12 +115,16 @@ function ClientModal({
           </Col>
 
           <Col span={12}>
-            <Form.Item label={requiredLabel("នាមខ្លួន")} name="នាមខ្លួន"     rules={[
+            <Form.Item
+              label={requiredLabel("នាមខ្លួន")}
+              name="នាមខ្លួន"
+              rules={[
                 {
                   required: true,
                   message: "សូមបញ្ចូលនាមខ្លួន",
                 },
-              ]}>
+              ]}
+            >
               <Input placeholder="បញ្ចូលនាមខ្លួន" size="large" />
             </Form.Item>
           </Col>
@@ -158,12 +172,14 @@ function ClientModal({
               ]}
             >
               <DatePicker
-                locale={khmerDatePickerLocale}
-                size="large"
+                disabled
+                format="DD/MM/YYYY"
                 style={{
                   width: "100%",
+                  background: "#f3f4f6",
+                  cursor: "not-allowed",
                 }}
-                format="DD/MM/YYYY"
+                size="large"
               />
             </Form.Item>
           </Col>
