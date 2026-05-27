@@ -77,7 +77,7 @@ export function GenerateBillsModal({
   const [tenantScope, setTenantScope] = useState<"all" | "selected">("all");
 
   const steps = [
-    { title: "ប្រភេទវិក្កយបត្រ", icon: <CalendarOutlined /> },
+    { title: "ប្រភេទ​វិក្កយបត្រ", icon: <CalendarOutlined /> },
     { title: "ជ្រើសរើសអតិថិជន", icon: <TeamOutlined /> },
     { title: "កំណត់តម្លៃ", icon: <DollarOutlined /> },
     { title: "បញ្ជាក់ & បង្កើត", icon: <CheckOutlined /> },
@@ -172,7 +172,7 @@ export function GenerateBillsModal({
       title={
         <div style={{ fontSize: 18, fontWeight: 700, color: "#1f2937" }}>
           <ThunderboltOutlined style={{ marginRight: 8, color: "#4f74e8" }} />
-          បង្កើតវិក្កយបត្រថ្មី
+          បង្កើត​វិក្កយបត្រថ្មី
         </div>
       }
       open={open}
@@ -208,7 +208,7 @@ export function GenerateBillsModal({
           <div>
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 12, fontSize: 14, color: "#374151" }}>
-                រយៈពេលវិក្កយបត្រ
+                រយៈពេល​វិក្កយបត្រ
               </div>
               <Radio.Group
                 value={billingType}
@@ -222,7 +222,7 @@ export function GenerateBillsModal({
                   <Radio value="monthly">
                     <span style={{ fontWeight: 500 }}>ប្រចាំខែ</span>
                     <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>
-                      បង្កើតវិក្កយបត្រសម្រាប់ខែជាក់លាក់
+                      បង្កើត​វិក្កយបត្រសម្រាប់ខែជាក់លាក់
                     </div>
                   </Radio>
                   <Radio value="custom">
@@ -293,7 +293,7 @@ export function GenerateBillsModal({
                 <Radio value="all">
                   <span style={{ fontWeight: 500 }}>អតិថិជនទាំងអស់</span>
                   <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>
-                    បង្កើតវិក្កយបត្រសម្រាប់អតិថិជនសកម្មទាំងអស់
+                    បង្កើត​វិក្កយបត្រសម្រាប់អតិថិជនសកម្មទាំងអស់
                   </div>
                 </Radio>
                 <Radio value="selected">
@@ -415,7 +415,7 @@ export function GenerateBillsModal({
             >
               <div style={{ fontSize: 12, color: "#166534", display: "flex", alignItems: "center", gap: 8 }}>
                 <CheckOutlined style={{ color: "#16a34a" }} />
-                តម្លៃទាំងនេះនឹងត្រូវបានអនុវត្តចំពោះវិក្កយបត្រទាំងអស់ដែលបានបង្កើត
+                តម្លៃទាំងនេះនឹងត្រូវបានអនុវត្តចំពោះ​វិក្កយបត្រទាំងអស់ដែលបានបង្កើត
               </div>
             </div>
           </div>
@@ -440,7 +440,7 @@ export function GenerateBillsModal({
               <Row gutter={[16, 16]}>
                 <Col span={12}>
                   <Statistic
-                    title={<span style={{ fontSize: 12, color: "#6b7280" }}>រយៈពេលវិក្កយបត្រ</span>}
+                    title={<span style={{ fontSize: 12, color: "#6b7280" }}>រយៈពេល​វិក្កយបត្រ</span>}
                     value={previewData.period}
                     valueStyle={{ fontSize: 14, fontWeight: 600, color: "#374151" }}
                   />
@@ -454,7 +454,7 @@ export function GenerateBillsModal({
                 </Col>
                 <Col span={12}>
                   <Statistic
-                    title={<span style={{ fontSize: 12, color: "#6b7280" }}>វិក្កយបត្រប៉ាន់ស្មាន</span>}
+                    title={<span style={{ fontSize: 12, color: "#6b7280" }}>​វិក្កយបត្រប៉ាន់ស្មាន</span>}
                     value={previewData.estimatedBills}
                     valueStyle={{ fontSize: 14, fontWeight: 600, color: "#374151" }}
                   />
@@ -492,7 +492,7 @@ export function GenerateBillsModal({
 
             <Alert
               message="សូមបញ្ជាក់ព័ត៌មាន"
-              description="បន្ទាប់ពីបង្កើតវិក្កយបត្រ អ្នកមិនអាចកែប្រែតម្លៃបានទេ"
+              description="បន្ទាប់ពីបង្កើត​វិក្កយបត្រ អ្នកមិនអាចកែប្រែតម្លៃបានទេ"
               type="warning"
               showIcon
               style={{ marginTop: 16, borderRadius: 10 }}
@@ -519,7 +519,7 @@ export function GenerateBillsModal({
             }}
           >
             {currentStep === steps.length - 1 ? (
-              <span><CheckOutlined /> បង្កើតវិក្កយបត្រ</span>
+              <span><CheckOutlined /> បង្កើត​វិក្កយបត្រ</span>
             ) : (
               <span>បន្ទាប់ <ClockCircleOutlined /></span>
             )}

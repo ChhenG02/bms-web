@@ -54,7 +54,7 @@ const DEFAULT_MODULES: Omit<ModulePermission, "view" | "create" | "edit" | "dele
   { module: "dashboard", moduleLabel: "ផ្ទាំងគ្រប់គ្រង" },
   { module: "clients", moduleLabel: "អតិថិជន" },
   { module: "users", moduleLabel: "អ្នកប្រើប្រាស់" },
-  { module: "billing", moduleLabel: "វិក្កយបត្រ" },
+  { module: "billing", moduleLabel: "​វិក្កយបត្រ" },
   { module: "reports", moduleLabel: "របាយការណ៍" },
   { module: "settings", moduleLabel: "ការកំណត់" },
 ];
@@ -86,7 +86,7 @@ const ROLES: RoleRow[] = [
     id: 2,
     name: "Admin",
     nameKh: "អ្នកគ្រប់គ្រង",
-    description: "គ្រប់គ្រងអតិថិជន និងវិក្កយបត្រ តែគ្មានសិទ្ធិលុបអ្នកប្រើ",
+    description: "គ្រប់គ្រងអតិថិជន និង​វិក្កយបត្រ តែគ្មានសិទ្ធិលុបអ្នកប្រើ",
     userCount: 3,
     createdAt: "Mon, 14 Mar 2022",
     status: "Active",

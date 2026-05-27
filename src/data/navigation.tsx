@@ -36,8 +36,8 @@ export const navigationItems: NavigationItem[] = [
     children: [
       {
         key: "/bill",
-        label: "វិក័យប័ត្រ",
-        title: "វិក័យប័ត្រ",
+        label: "​វិក្កយបត្រ",
+        title: "​វិក្កយបត្រ",
         path: "/bill",
         icon: <FileTextOutlined />,
       },

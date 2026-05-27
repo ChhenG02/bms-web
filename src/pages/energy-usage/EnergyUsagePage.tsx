@@ -1,7 +1,7 @@
 /**
  * EnergyUsagePage.tsx
  *
- * Energy usage report page (វិក្កយបត្រប្រើប្រាស់ថាមពល) for PATech – Pisnuk AutoTech.
+ * Energy usage report page (​វិក្កយបត្រប្រើប្រាស់ថាមពល) for PATech – Pisnuk AutoTech.
  *
  * HOW TO CONNECT TO BACKEND:
  *   - Replace each constant in the "STATIC DATA" section with your API call.

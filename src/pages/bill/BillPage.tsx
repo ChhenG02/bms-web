@@ -295,7 +295,7 @@ function BillPage() {
 
   const handleGenerateBills = (values: GenerateBillsFormValues) => {
     console.log("Generating bills with:", values);
-    appMessage.success("វិក្កយបត្រត្រូវបានបង្កើតដោយជោគជ័យ!");
+    appMessage.success("​វិក្កយបត្រត្រូវបានបង្កើតដោយជោគជ័យ!");
     setGenerateModalOpen(false);
   };
 
@@ -432,7 +432,7 @@ function BillPage() {
                   title: "បញ្ជាក់ការលុប",
                   content: (
                     <span>
-                      តើអ្នកពិតជាចង់លុបវិក្កយបត្រ <strong>{record.id}</strong>{" "}
+                      តើអ្នកពិតជាចង់លុប​វិក្កយបត្រ <strong>{record.id}</strong>{" "}
                       របស់ <strong>{record.clientName}</strong> មែនទេ?
                     </span>
                   ),
@@ -481,7 +481,7 @@ function BillPage() {
           >
             <div>
               <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
-                វិក្កយបត្រសរុប
+                ​វិក្កយបត្រសរុប
               </div>
               <div style={{ fontSize: 22, fontWeight: 700, color: "#4f74e8" }}>{stats.total}</div>
             </div>

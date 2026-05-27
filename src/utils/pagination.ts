@@ -107,6 +107,6 @@ export function buildEnergyUsageTablePagination({
       ],
     },
 
-    showTotal: (total) => `ចំនួន ${total} វិក្កយបត្រ`,
+    showTotal: (total) => `ចំនួន ${total} ​វិក្កយបត្រ`,
   };
 }
