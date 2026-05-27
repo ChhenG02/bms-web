@@ -31,7 +31,7 @@ function App() {
           colorBgContainer: "#ffffff",
           colorBorderSecondary: "#e6ecf5",
 
-          borderRadius: 18,
+          borderRadius: 8,
 
           fontFamily:
             "'Kantumruy Pro', 'Noto Sans Khmer', 'Segoe UI', sans-serif",

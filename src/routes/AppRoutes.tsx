@@ -13,6 +13,7 @@ import UsersPage from "../pages/UsersPage";
 import EnergyUsagePage from "../pages/energy-usage/EnergyUsagePage";
 import PermissionPage from "../pages/PermissionPage";
 import ProfilePage from "../pages/ProfilePage";
+import BillPage from "../pages/bill/BillPage";
 
 function AppRoutes() {
   return (
@@ -34,6 +35,9 @@ function AppRoutes() {
         {/* CLIENT */}
         <Route path="client" element={<ClientPage />} />
         <Route path="client/:id" element={<ClientPageDetail />} />
+
+        {/* Bill */}
+        <Route path="bill" element={< BillPage />} />
 
         {/* ENERGY USAGE */}
         <Route path="energy-usage" element={< EnergyUsagePage />} />

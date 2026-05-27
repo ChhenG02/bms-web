@@ -1,0 +1,743 @@
+import {
+  CheckOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  EyeOutlined,
+  FilterOutlined,
+  MoreOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
+import {
+  App,
+  Button,
+  Card,
+  Dropdown,
+  Input,
+  Select,
+  Table,
+  Tag,
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { useMemo, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { buildEnergyUsageTablePagination } from "../../utils/pagination";
+import { GenerateBillsModal, type GenerateBillsFormValues } from "./GenerateBillsModal";
+
+
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+export type BillStatus = "Paid" | "Unpaid" | "Overdue";
+
+export interface BillRow {
+  key: string;
+  id: string;
+  clientId: string;
+  clientName: string;
+  month: string;
+  monthLabel: string;
+  oldReading: number;
+  newReading: number;
+  usage: number;
+  unitPrice: number;
+  total: string;
+  issueDate: string;
+  dueDate: string;
+  status: BillStatus;
+}
+
+// ─── Mock Data ───────────────────────────────────────────────────────────────
+
+const BILLS: BillRow[] = [
+  {
+    key: "1",
+    id: "B-001",
+    clientId: "C-001",
+    clientName: "សុខ សុភា",
+    month: "2025-05",
+    monthLabel: "ឧសភា 2025",
+    oldReading: 1200,
+    newReading: 1345,
+    usage: 145,
+    unitPrice: 900,
+    total: "130,500៛",
+    issueDate: "01/05/2025",
+    dueDate: "15/05/2025",
+    status: "Paid",
+  },
+  {
+    key: "2",
+    id: "B-002",
+    clientId: "C-002",
+    clientName: "វង្ស ចន្ថា",
+    month: "2025-05",
+    monthLabel: "ឧសភា 2025",
+    oldReading: 870,
+    newReading: 980,
+    usage: 110,
+    unitPrice: 900,
+    total: "99,000៛",
+    issueDate: "01/05/2025",
+    dueDate: "15/05/2025",
+    status: "Unpaid",
+  },
+  {
+    key: "3",
+    id: "B-003",
+    clientId: "C-003",
+    clientName: "ហេង សុវណ្ណ",
+    month: "2025-05",
+    monthLabel: "ឧសភា 2025",
+    oldReading: 560,
+    newReading: 710,
+    usage: 150,
+    unitPrice: 900,
+    total: "135,000៛",
+    issueDate: "01/05/2025",
+    dueDate: "15/05/2025",
+    status: "Overdue",
+  },
+  {
+    key: "4",
+    id: "B-004",
+    clientId: "C-001",
+    clientName: "សុខ សុភា",
+    month: "2025-04",
+    monthLabel: "មេសា 2025",
+    oldReading: 1060,
+    newReading: 1200,
+    usage: 140,
+    unitPrice: 900,
+    total: "126,000៛",
+    issueDate: "01/04/2025",
+    dueDate: "15/04/2025",
+    status: "Paid",
+  },
+  {
+    key: "5",
+    id: "B-005",
+    clientId: "C-004",
+    clientName: "ម៉ៅ ច័ន្ទបូ",
+    month: "2025-05",
+    monthLabel: "ឧសភា 2025",
+    oldReading: 2100,
+    newReading: 2280,
+    usage: 180,
+    unitPrice: 900,
+    total: "162,000៛",
+    issueDate: "01/05/2025",
+    dueDate: "15/05/2025",
+    status: "Paid",
+  },
+  {
+    key: "6",
+    id: "B-006",
+    clientId: "C-005",
+    clientName: "ទូច រ៉ាណា",
+    month: "2025-05",
+    monthLabel: "ឧសភា 2025",
+    oldReading: 430,
+    newReading: 560,
+    usage: 130,
+    unitPrice: 900,
+    total: "117,000៛",
+    issueDate: "01/05/2025",
+    dueDate: "15/05/2025",
+    status: "Unpaid",
+  },
+  {
+    key: "7",
+    id: "B-007",
+    clientId: "C-006",
+    clientName: "ឃុន លីណា",
+    month: "2025-04",
+    monthLabel: "មេសា 2025",
+    oldReading: 980,
+    newReading: 1095,
+    usage: 115,
+    unitPrice: 900,
+    total: "103,500៛",
+    issueDate: "01/04/2025",
+    dueDate: "15/04/2025",
+    status: "Overdue",
+  },
+  {
+    key: "8",
+    id: "B-008",
+    clientId: "C-007",
+    clientName: "នួន សុធារ៉ា",
+    month: "2025-05",
+    monthLabel: "ឧសភា 2025",
+    oldReading: 1500,
+    newReading: 1670,
+    usage: 170,
+    unitPrice: 900,
+    total: "153,000៛",
+    issueDate: "01/05/2025",
+    dueDate: "15/05/2025",
+    status: "Paid",
+  },
+];
+
+// ─── Month options ───────────────────────────────────────────────────────────
+
+const MONTH_OPTIONS = [
+  { value: "", label: "គ្រប់ខែ" },
+  { value: "2025-05", label: "ឧសភា 2025" },
+  { value: "2025-04", label: "មេសា 2025" },
+  { value: "2025-03", label: "មីនា 2025" },
+];
+
+const STATUS_OPTIONS = [
+  { value: "", label: "គ្រប់ស្ថានភាព" },
+  { value: "Paid", label: "បានបង់" },
+  { value: "Unpaid", label: "មិនទាន់បង់" },
+  { value: "Overdue", label: "ហួសកំណត់" },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function StatusTag({ value }: { value: BillStatus }) {
+  const tagStyle = {
+    borderRadius: 999,
+    paddingInline: 12,
+    height: 30,
+    display: "inline-flex" as const,
+    alignItems: "center",
+    gap: 6,
+    fontWeight: 600,
+    border: "none",
+    fontSize: 13,
+  };
+
+  if (value === "Paid") {
+    return (
+      <Tag color="success" style={tagStyle}>
+        <CheckOutlined /> បានបង់
+      </Tag>
+    );
+  }
+  if (value === "Overdue") {
+    return (
+      <Tag color="warning" style={tagStyle}>
+        ⚠ ហួសកំណត់
+      </Tag>
+    );
+  }
+  return (
+    <Tag color="error" style={tagStyle}>
+      ✕ មិនទាន់បង់
+    </Tag>
+  );
+}
+
+// ─── BillPage ────────────────────────────────────────────────────────────────
+
+function BillPage() {
+  const [search, setSearch] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(7);
+  const [generateModalOpen, setGenerateModalOpen] = useState(false);
+
+  const [debouncedSearch] = useDebounce(search, 300);
+
+  const { modal, message: appMessage } = App.useApp();
+
+  // ── Filtered rows ──────────────────────────────────────────────────────────
+  const filteredRows = useMemo(() => {
+    let rows = BILLS;
+
+    if (selectedMonth) {
+      rows = rows.filter((r) => r.month === selectedMonth);
+    }
+
+    if (selectedStatus) {
+      rows = rows.filter((r) => r.status === selectedStatus);
+    }
+
+    if (debouncedSearch.trim()) {
+      const kw = debouncedSearch.toLowerCase();
+      rows = rows.filter(
+        (r) =>
+          r.clientName.toLowerCase().includes(kw) ||
+          r.id.toLowerCase().includes(kw) ||
+          r.clientId.toLowerCase().includes(kw) ||
+          r.monthLabel.toLowerCase().includes(kw),
+      );
+    }
+
+    return rows;
+  }, [debouncedSearch, selectedMonth, selectedStatus]);
+
+  // ── Stats ──────────────────────────────────────────────────────────────────
+  const stats = useMemo(() => {
+    const scope = selectedMonth
+      ? BILLS.filter((r) => r.month === selectedMonth)
+      : BILLS;
+
+    return {
+      total: scope.length,
+      paid: scope.filter((r) => r.status === "Paid").length,
+      unpaid: scope.filter((r) => r.status === "Unpaid").length,
+      overdue: scope.filter((r) => r.status === "Overdue").length,
+    };
+  }, [selectedMonth]);
+
+  // ── Paginated ──────────────────────────────────────────────────────────────
+  const paginatedRows = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredRows.slice(start, start + pageSize);
+  }, [filteredRows, page, pageSize]);
+
+  const handleGenerateBills = (values: GenerateBillsFormValues) => {
+    console.log("Generating bills with:", values);
+    appMessage.success("វិក្កយបត្រត្រូវបានបង្កើតដោយជោគជ័យ!");
+    setGenerateModalOpen(false);
+  };
+
+  // ── Columns ────────────────────────────────────────────────────────────────
+  const columns: ColumnsType<BillRow> = [
+    {
+      title: "ល.រ",
+      dataIndex: "id",
+      key: "id",
+      width: 90,
+      render: (v: string) => (
+        <span style={{ color: "#6b7280", fontWeight: 500 }}>{v}</span>
+      ),
+    },
+    {
+      title: "ឈ្មោះអតិថិជន",
+      dataIndex: "clientName",
+      key: "clientName",
+      width: 180,
+      render: (v: string, record) => (
+        <span style={{ color: "#4f74e8", fontWeight: 600 }}>
+          {v}
+          <br />
+          <span style={{ color: "#9ca3af", fontSize: 12, fontWeight: 400 }}>
+            {record.clientId}
+          </span>
+        </span>
+      ),
+    },
+    {
+      title: "ខែ",
+      dataIndex: "monthLabel",
+      key: "monthLabel",
+      width: 140,
+      render: (v: string) => (
+        <span style={{ color: "#374151", fontWeight: 500 }}>
+          <CalendarOutlined style={{ marginRight: 6, color: "#4f74e8" }} />
+          {v}
+        </span>
+      ),
+    },
+    {
+      title: "លេខកុងទ័រចាស់",
+      dataIndex: "oldReading",
+      key: "oldReading",
+      width: 130,
+      render: (v: number) => (
+        <span style={{ color: "#6b7280" }}>{v.toLocaleString()}</span>
+      ),
+    },
+    {
+      title: "លេខកុងទ័រថ្មី",
+      dataIndex: "newReading",
+      key: "newReading",
+      width: 120,
+      render: (v: number) => (
+        <span style={{ color: "#6b7280" }}>{v.toLocaleString()}</span>
+      ),
+    },
+    {
+      title: "ទំហំប្រើប្រាស់ (kWh)",
+      dataIndex: "usage",
+      key: "usage",
+      width: 155,
+      render: (v: number) => (
+        <span style={{ fontWeight: 600, color: "#374151" }}>
+          {v.toLocaleString()} kWh
+        </span>
+      ),
+    },
+    {
+      title: "គិតជាទឹកប្រាក់",
+      dataIndex: "total",
+      key: "total",
+      width: 160,
+      render: (v: string) => (
+        <span style={{ fontWeight: 700, color: "#1d4ed8" }}>{v}</span>
+      ),
+    },
+    {
+      title: "កាលបរិច្ឆេទ",
+      key: "dates",
+      width: 165,
+      render: (_, record) => (
+        <span style={{ fontSize: 12, color: "#6b7280", lineHeight: "1.8" }}>
+          ចេញ: {record.issueDate}
+          <br />
+          ផុតកំណត់:{" "}
+          <span
+            style={{
+              color: record.status === "Overdue" ? "#ef4444" : "#6b7280",
+            }}
+          >
+            {record.dueDate}
+          </span>
+        </span>
+      ),
+    },
+    {
+      title: "ស្ថានភាព",
+      dataIndex: "status",
+      key: "status",
+      width: 150,
+      render: (v: BillStatus) => <StatusTag value={v} />,
+    },
+    {
+      title: "សកម្មភាព",
+      key: "action",
+      width: 70,
+      align: "center",
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              { key: "view", icon: <EyeOutlined />, label: "មើលព័ត៌មាន" },
+              { key: "edit", icon: <EditOutlined />, label: "កែប្រែ" },
+              {
+                key: "download",
+                icon: <DownloadOutlined />,
+                label: "ទាញយក PDF",
+              },
+              { type: "divider" },
+              {
+                key: "delete",
+                icon: <DeleteOutlined />,
+                label: "លុប",
+                danger: true,
+              },
+            ],
+            onClick: ({ key }) => {
+              if (key === "delete") {
+                modal.confirm({
+                  title: "បញ្ជាក់ការលុប",
+                  content: (
+                    <span>
+                      តើអ្នកពិតជាចង់លុបវិក្កយបត្រ <strong>{record.id}</strong>{" "}
+                      របស់ <strong>{record.clientName}</strong> មែនទេ?
+                    </span>
+                  ),
+                  okText: "លុប",
+                  cancelText: "បោះបង់",
+                  okButtonProps: { danger: true },
+                  centered: true,
+                  onOk() {
+                    console.log("delete bill", record);
+                  },
+                });
+              } else {
+                console.log(key, record);
+              }
+            },
+          }}
+        >
+          <Button
+            type="text"
+            icon={<MoreOutlined />}
+            style={{ width: 36, height: 36, borderRadius: 10 }}
+          />
+        </Dropdown>
+      ),
+    },
+  ];
+
+  return (
+    <div style={{ background: "#f6f8fb", minHeight: "100vh" }}>
+      {/* ── STAT CARDS (Client Page Style) ── */}
+      <div style={{ padding: "20px 20px 0" }}>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #4f74e8",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+                វិក្កយបត្រសរុប
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#4f74e8" }}>{stats.total}</div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <CalendarOutlined />
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #16a34a",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+                បានបង់
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#16a34a" }}>{stats.paid}</div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <CheckOutlined />
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #dc2626",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+                មិនទាន់បង់
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#dc2626" }}>{stats.unpaid}</div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <DeleteOutlined />
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #d97706",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+                ហួសកំណត់
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#d97706" }}>{stats.overdue}</div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <FilterOutlined />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── MAIN TABLE CARD ── */}
+      <div style={{ padding: "14px 20px 32px" }}>
+        <Card
+          variant="borderless"
+          styles={{ body: { padding: 0 } }}
+          style={{ borderRadius: 16 }}
+        >
+          {/* TOOLBAR */}
+          <div
+            style={{
+              padding: "16px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+              borderBottom: "1px solid #f1f5f9",
+            }}
+          >
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1 }}>
+              <Input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="ស្វែងរកតាមឈ្មោះ, លេខ..."
+                prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+                allowClear
+                style={{
+                  width: 240,
+                  height: 42,
+                  borderRadius: 10,
+                  background: "#f9fafb",
+                  borderColor: "#e5e7eb",
+                }}
+              />
+              <Select
+                value={selectedMonth}
+                onChange={(v) => {
+                  setSelectedMonth(v);
+                  setPage(1);
+                }}
+                options={MONTH_OPTIONS}
+                style={{ width: 170, height: 42 }}
+                suffixIcon={<CalendarOutlined style={{ color: "#9ca3af" }} />}
+              />
+              <Select
+                value={selectedStatus}
+                onChange={(v) => {
+                  setSelectedStatus(v);
+                  setPage(1);
+                }}
+                options={STATUS_OPTIONS}
+                style={{ width: 170, height: 42 }}
+                suffixIcon={<FilterOutlined style={{ color: "#9ca3af" }} />}
+              />
+
+              {(selectedMonth || selectedStatus) && (
+                <Button
+                  style={{
+                    height: 42,
+                    borderRadius: 10,
+                    color: "#6b7280",
+                    borderColor: "#e5e7eb",
+                  }}
+                  onClick={() => {
+                    setSelectedMonth("");
+                    setSelectedStatus("");
+                    setSearch("");
+                    setPage(1);
+                  }}
+                >
+                  លុបតម្រង ({[selectedMonth && "ខែ", selectedStatus && "ស្ថានភាព"].filter(Boolean).length})
+                </Button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <Button
+                icon={<DownloadOutlined />}
+                style={{ height: 42, borderRadius: 10 }}
+              >
+                ទាញយក
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                style={{ height: 42, borderRadius: 10 }}
+                onClick={() => setGenerateModalOpen(true)}
+              >
+                បង្កើត
+              </Button>
+            </div>
+          </div>
+
+          {/* TABLE */}
+          <div style={{ padding: "8px 16px 16px" }}>
+            <Table<BillRow>
+              columns={columns}
+              dataSource={paginatedRows}
+              scroll={{ x: 1400 }}
+              rowKey="key"
+              size="middle"
+              pagination={{
+                ...buildEnergyUsageTablePagination({
+                  page,
+                  pageSize,
+                  total: filteredRows.length,
+                }),
+                onChange: (p, ps) => {
+                  setPage(p);
+                  setPageSize(ps);
+                },
+              }}
+            />
+          </div>
+        </Card>
+      </div>
+
+      {/* Generate Bills Modal */}
+      <GenerateBillsModal
+        open={generateModalOpen}
+        onCancel={() => setGenerateModalOpen(false)}
+        onGenerate={handleGenerateBills}
+      />
+
+      <style>{`
+        .ant-table { background: transparent !important; }
+
+        .ant-table-thead > tr > th {
+          background: #fafbfc !important;
+          color: #4f74e8 !important;
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          border-bottom: 1px solid #eef2f7 !important;
+          padding-top: 13px !important;
+          padding-bottom: 13px !important;
+        }
+
+        .ant-table-tbody > tr > td {
+          border-bottom: 1px solid #f3f4f6 !important;
+          color: #6b7280;
+          font-size: 13px;
+          padding-top: 11px !important;
+          padding-bottom: 11px !important;
+        }
+
+        .ant-table-tbody > tr:nth-child(odd) > td  { background: #fafafa; }
+        .ant-table-tbody > tr:nth-child(even) > td { background: #ffffff; }
+        .ant-table-tbody > tr:hover > td           { background: #f3f7ff !important; }
+
+        .ant-input:focus, .ant-input-focused {
+          border-color: #4f74e8 !important;
+          box-shadow: 0 0 0 2px rgba(79,116,232,0.08) !important;
+        }
+
+        .ant-btn-primary:hover { background: #3f63d8 !important; }
+
+        .ant-select-selector { 
+          border-radius: 10px !important; 
+          background: #f9fafb !important; 
+          border-color: #e5e7eb !important; 
+        }
+        .ant-select-focused .ant-select-selector { 
+          border-color: #4f74e8 !important; 
+          box-shadow: 0 0 0 2px rgba(79,116,232,0.08) !important; 
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default BillPage;

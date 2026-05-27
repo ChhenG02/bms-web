@@ -4,7 +4,6 @@ import { Layout } from "antd";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import AppNavbar from "../components/layout/AppNavbar";
 import AppSidebar from "../components/layout/AppSidebar";
 
 import "../styles/sidebar.css";
@@ -34,9 +33,6 @@ function DashboardLayout() {
           background: "#f6f8fb",
         }}
       >
-        {/* TOP NAVBAR */}
-        <AppNavbar />
-
         {/* PAGE CONTENT */}
         <Layout.Content
           style={{

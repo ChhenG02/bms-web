@@ -1,224 +1,348 @@
 import {
-  CheckOutlined,
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
+  FilterOutlined,
+  HomeOutlined,
   MoreOutlined,
   PlusOutlined,
   SearchOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { App, Button, Card, Dropdown, Input, Table, Tag } from "antd";
+import { App, Button, Card, Dropdown, Input, Select, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-
-import ClientModal from "./ClientForm";
 import { NavLink, useNavigate } from "react-router-dom";
-import { CLIENTS, type ClientRow } from "../../data/clientData";
 import { buildPeopleTablePagination } from "../../utils/pagination";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export type ClientStatus = "Active" | "Pending" | "MovedOut";
+
+export interface ClientRow {
+  key: string;
+  id: string;
+  name: string;
+  phone: string;
+  room: string;
+  moveInDate: string;
+  status: ClientStatus;
+}
+
+// ─── Mock Data ────────────────────────────────────────────────────────────────
+
+const CLIENTS: ClientRow[] = [
+  {
+    key: "1",
+    id: "C-001",
+    name: "សុខ សុភា",
+    phone: "012 345 678",
+    room: "A01",
+    moveInDate: "01/01/2024",
+    status: "Active",
+  },
+  {
+    key: "2",
+    id: "C-002",
+    name: "វង្ស ចន្ថា",
+    phone: "011 222 333",
+    room: "A02",
+    moveInDate: "15/03/2024",
+    status: "Pending",
+  },
+  {
+    key: "3",
+    id: "C-003",
+    name: "ហេង សុវណ្ណ",
+    phone: "096 111 222",
+    room: "B01",
+    moveInDate: "10/06/2023",
+    status: "Active",
+  },
+  {
+    key: "4",
+    id: "C-004",
+    name: "ម៉ៅ ច័ន្ទបូ",
+    phone: "078 444 555",
+    room: "B02",
+    moveInDate: "20/09/2023",
+    status: "MovedOut",
+  },
+  {
+    key: "5",
+    id: "C-005",
+    name: "ទូច រ៉ាណា",
+    phone: "085 666 777",
+    room: "C01",
+    moveInDate: "05/11/2023",
+    status: "Active",
+  },
+  {
+    key: "6",
+    id: "C-006",
+    name: "ឃុន លីណា",
+    phone: "093 888 999",
+    room: "C02",
+    moveInDate: "01/02/2024",
+    status: "Active",
+  },
+  {
+    key: "7",
+    id: "C-007",
+    name: "នួន សុធារ៉ា",
+    phone: "077 000 111",
+    room: "D01",
+    moveInDate: "12/04/2024",
+    status: "Pending",
+  },
+  {
+    key: "8",
+    id: "C-008",
+    name: "ស៊ិន វិចិត្រ",
+    phone: "010 123 456",
+    room: "D02",
+    moveInDate: "30/07/2023",
+    status: "Active",
+  },
+];
+
+// ─── Status Tag ───────────────────────────────────────────────────────────────
+
+const STATUS_CONFIG: Record<
+  ClientStatus,
+  { color: string; bg: string; label: string; dot: string }
+> = {
+  Active: {
+    color: "#15803d",
+    bg: "#f0fdf4",
+    label: "កំពុងស្នាក់",
+    dot: "#22c55e",
+  },
+  Pending: {
+    color: "#b45309",
+    bg: "#fffbeb",
+    label: "កំពុងរង់ចាំ",
+    dot: "#f59e0b",
+  },
+  MovedOut: {
+    color: "#b91c1c",
+    bg: "#fef2f2",
+    label: "បានចាកចេញ",
+    dot: "#ef4444",
+  },
+};
+
+function StatusTag({ value }: { value: ClientStatus }) {
+  const cfg = STATUS_CONFIG[value];
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        background: cfg.bg,
+        color: cfg.color,
+        fontWeight: 600,
+        fontSize: 13,
+        borderRadius: 999,
+        paddingInline: 12,
+        paddingBlock: 4,
+      }}
+    >
+      <span
+        style={{
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
+          background: cfg.dot,
+          flexShrink: 0,
+        }}
+      />
+      {cfg.label}
+    </span>
+  );
+}
+
+// ─── ClientPage ───────────────────────────────────────────────────────────────
 
 function ClientPage() {
   const [search, setSearch] = useState("");
-
   const [debouncedSearch] = useDebounce(search, 300);
-
-  const filteredRows = useMemo(() => {
-    if (!debouncedSearch.trim()) {
-      return CLIENTS;
-    }
-
-    const keyword = debouncedSearch.toLowerCase();
-
-    return CLIENTS.filter((row) => {
-      return (
-        row.name.toLowerCase().includes(keyword) ||
-        row.id.toLowerCase().includes(keyword) ||
-        row.total.toLowerCase().includes(keyword) ||
-        row.usage.toLowerCase().includes(keyword) ||
-        row.lastDate.toLowerCase().includes(keyword)
-      );
-    });
-  }, [debouncedSearch, CLIENTS]);
-
+  const [selectedStatus, setSelectedStatus] = useState<ClientStatus | "">("");
+  const [selectedRoom, setSelectedRoom] = useState("");
   const [page, setPage] = useState(1);
-
-  const [pageSize, setPageSize] = useState(5);
-
+  const [pageSize, setPageSize] = useState(7);
   const [openModal, setOpenModal] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientRow | null>(null);
 
   const navigate = useNavigate();
-
   const { modal } = App.useApp();
+
+  const filteredRows = useMemo(() => {
+    let rows = CLIENTS;
+
+    if (selectedStatus) {
+      rows = rows.filter((r) => r.status === selectedStatus);
+    }
+
+    if (selectedRoom) {
+      rows = rows.filter((r) => r.room === selectedRoom);
+    }
+
+    if (debouncedSearch.trim()) {
+      const kw = debouncedSearch.toLowerCase();
+      rows = rows.filter(
+        (r) =>
+          r.name.toLowerCase().includes(kw) ||
+          r.id.toLowerCase().includes(kw) ||
+          r.phone.toLowerCase().includes(kw) ||
+          r.room.toLowerCase().includes(kw),
+      );
+    }
+
+    return rows;
+  }, [debouncedSearch, selectedStatus, selectedRoom]);
 
   const paginatedRows = useMemo(() => {
     const start = (page - 1) * pageSize;
-
     return filteredRows.slice(start, start + pageSize);
   }, [filteredRows, page, pageSize]);
+
+  // ── Quick stats ────────────────────────────────────────────────────────────
+  const stats = useMemo(
+    () => ({
+      total: CLIENTS.length,
+      active: CLIENTS.filter((r) => r.status === "Active").length,
+      pending: CLIENTS.filter((r) => r.status === "Pending").length,
+      movedOut: CLIENTS.filter((r) => r.status === "MovedOut").length,
+    }),
+    [],
+  );
+
+  // ── Room options from data ─────────────────────────────────────────────────
+  const roomOptions = useMemo(() => {
+    const rooms = Array.from(new Set(CLIENTS.map((r) => r.room))).sort();
+    return [
+      { value: "", label: "គ្រប់បន្ទប់" },
+      ...rooms.map((r) => ({ value: r, label: `បន្ទប់ ${r}` })),
+    ];
+  }, []);
+
+  const activeFilterCount = [selectedStatus, selectedRoom].filter(
+    Boolean,
+  ).length;
 
   const columns: ColumnsType<ClientRow> = [
     {
       title: "ល.រ",
       dataIndex: "id",
       key: "id",
-      width: 70,
-
-      render: (value: string) => (
-        <span
-          style={{
-            color: "#6b7280",
-            fontWeight: 500,
-          }}
-        >
-          {value}
+      width: 85,
+      render: (v: string) => (
+        <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 13 }}>
+          {v}
         </span>
       ),
     },
-
     {
       title: "ឈ្មោះពេញ",
       dataIndex: "name",
       key: "name",
-      width: 220,
-
-      render: (value: string, record) => (
+      width: 200,
+      render: (v: string, record) => (
         <NavLink
           to={`/client/${record.id}`}
           style={{
             color: "#4f74e8",
-            fontWeight: 600,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
           }}
         >
-          {value}
+          <span
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "#eff3fe",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <UserOutlined style={{ fontSize: 14, color: "#4f74e8" }} />
+          </span>
+          {v}
         </NavLink>
       ),
     },
-
     {
-      title: "កាលបរិច្ឆេទចុះឈ្មោះ",
-      dataIndex: "lastDate",
-      key: "lastDate",
-      width: 180,
-    },
-
-    {
-      title: "លេខកុងទ័រចាស់",
-      dataIndex: "oldReading",
-      key: "oldReading",
-      width: 120,
-    },
-
-    {
-      title: "លេខកុងទ័រថ្មី",
-      dataIndex: "newReading",
-      key: "newReading",
-      width: 120,
-    },
-
-    {
-      title: "ទំហំប្រើប្រាស់",
-      dataIndex: "usage",
-      key: "usage",
-      width: 160,
-
-      render: (value: string) => (
+      title: "លេខទូរស័ព្ទ",
+      dataIndex: "phone",
+      key: "phone",
+      width: 155,
+      render: (v: string) => (
         <span
-          style={{
-            fontWeight: 600,
-            color: "#6b7280",
-          }}
+          style={{ color: "#374151", fontFamily: "monospace", fontSize: 13 }}
         >
-          {value}
+          {v}
         </span>
       ),
     },
-
     {
-      title: "គិតជាទឹកប្រាក់",
-      dataIndex: "total",
-      key: "total",
-      width: 180,
-
-      render: (value: string) => (
+      title: "បន្ទប់",
+      dataIndex: "room",
+      key: "room",
+      width: 90,
+      render: (v: string) => (
         <span
           style={{
-            fontWeight: 700,
+            background: "#f3f4f6",
             color: "#374151",
+            fontWeight: 700,
+            fontSize: 13,
+            borderRadius: 8,
+            paddingInline: 10,
+            paddingBlock: 4,
+            letterSpacing: 0.5,
           }}
         >
-          {value}
+          {v}
         </span>
       ),
     },
-
+    {
+      title: "កាលបរិច្ឆេទចូលស្នាក់",
+      dataIndex: "moveInDate",
+      key: "moveInDate",
+      width: 175,
+      render: (v: string) => (
+        <span style={{ color: "#6b7280", fontSize: 13 }}>{v}</span>
+      ),
+    },
     {
       title: "ស្ថានភាព",
       dataIndex: "status",
       key: "status",
-      width: 190,
-
-      render: (value: ClientRow["status"]) =>
-        value === "Paid" ? (
-          <Tag
-            color="success"
-            style={{
-              borderRadius: 999,
-              paddingInline: 12,
-              height: 32,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              fontWeight: 600,
-              border: "none",
-            }}
-          >
-            <CheckOutlined />
-            បានបង់
-          </Tag>
-        ) : (
-          <Tag
-            color="error"
-            style={{
-              borderRadius: 999,
-              paddingInline: 12,
-              height: 32,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              fontWeight: 600,
-              border: "none",
-            }}
-          >
-            ✕ មិនទាន់បង់
-          </Tag>
-        ),
+      width: 160,
+      render: (v: ClientStatus) => <StatusTag value={v} />,
     },
-
     {
       title: "សកម្មភាព",
       key: "action",
       width: 70,
       align: "center",
-
       render: (_, record) => (
         <Dropdown
           trigger={["click"]}
           menu={{
             items: [
-              {
-                key: "view",
-                icon: <EyeOutlined />,
-                label: "មើល",
-              },
-              {
-                key: "update",
-                icon: <EditOutlined />,
-                label: "កែប្រែ",
-              },
-              {
-                type: "divider",
-              },
+              { key: "view", icon: <EyeOutlined />, label: "មើល" },
+              { key: "update", icon: <EditOutlined />, label: "កែប្រែ" },
+              { type: "divider" },
               {
                 key: "delete",
                 icon: <DeleteOutlined />,
@@ -226,34 +350,25 @@ function ClientPage() {
                 danger: true,
               },
             ],
-
             onClick: ({ key }) => {
-              if (key === "view") {
-                navigate(`/client/${record.id}`);
-              }
-
+              if (key === "view") navigate(`/client/${record.id}`);
               if (key === "update") {
                 setEditingClient(record);
                 setOpenModal(true);
               }
-
               if (key === "delete") {
                 modal.confirm({
                   title: "បញ្ជាក់ការលុប",
                   content: (
                     <span>
-                      តើអ្នកពិតជាចង់លុប <strong>{record.name}</strong> មែនទេ?
+                      តើអ្នកពិតជាចង់លុប <strong>{record.name}</strong> (បន្ទប់{" "}
+                      {record.room}) មែនទេ?
                     </span>
                   ),
                   okText: "លុប",
                   cancelText: "បោះបង់",
-
-                  okButtonProps: {
-                    danger: true,
-                  },
-
+                  okButtonProps: { danger: true },
                   centered: true,
-
                   onOk() {
                     console.log("delete", record);
                   },
@@ -265,11 +380,7 @@ function ClientPage() {
           <Button
             type="text"
             icon={<MoreOutlined />}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-            }}
+            style={{ width: 36, height: 36, borderRadius: 10 }}
           />
         </Dropdown>
       ),
@@ -277,159 +388,369 @@ function ClientPage() {
   ];
 
   return (
-    <div
-      style={{
-        background: "#f6f8fb",
-        minHeight: "100vh",
-      }}
-    >
-      {/* MAIN CONTENT */}
-      <Card
-        variant="borderless"
-        styles={{
-          body: {
-            padding: 0,
-          },
-        }}
-      >
-        {/* TOOLBAR */}
-        <div
-          style={{
-            padding: 20,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 16,
-            flexWrap: "wrap",
-            borderBottom: "1px solid #f1f5f9",
-          }}
-        >
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="ស្វែងរក..."
-            prefix={
-              <SearchOutlined
-                style={{
-                  color: "#9ca3af",
-                }}
-              />
-            }
-            allowClear
+    <div style={{ background: "#f6f8fb", minHeight: "100vh" }}>
+      {/* ── STAT CARDS (Dashboard Style) ── */}
+      <div style={{ padding: "20px 20px 0" }}>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          {/* Total Clients */}
+          <div
             style={{
-              maxWidth: 420,
-              height: 44,
-              borderRadius: 10,
-              background: "#f9fafb",
-              borderColor: "#e5e7eb",
-            }}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            size="large"
-            onClick={() => {
-              setEditingClient(null);
-              setOpenModal(true);
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #4f74e8",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
             }}
           >
-            បង្កើតថ្មី
-          </Button>
-        </div>
+            <div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "#555",
+                  marginBottom: 6,
+                  fontWeight: 700,
+                }}
+              >
+                អតិថិជនសរុប
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#4f74e8" }}>
+                {stats.total}
+              </div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <UserOutlined />
+            </div>
+          </div>
 
-        {/* TABLE */}
-        <div
-          style={{
-            padding: "8px 16px 16px",
-          }}
-        >
-          <Table<ClientRow>
-            columns={columns}
-            dataSource={paginatedRows}
-            scroll={{ x: 1200 }}
-            pagination={buildPeopleTablePagination({
-              page,
-              pageSize,
-              total: filteredRows.length,
-            })}
-            onChange={(pagination) => {
-              setPage(pagination.current || 1);
-              setPageSize(pagination.pageSize || 5);
+          {/* Active Clients */}
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #16a34a",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
             }}
-            rowKey="key"
-            size="middle"
-          />
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "#555",
+                  marginBottom: 6,
+                  fontWeight: 700,
+                }}
+              >
+                កំពុងស្នាក់
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#16a34a" }}>
+                {stats.active}
+              </div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <HomeOutlined />
+            </div>
+          </div>
+
+          {/* Pending Clients */}
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #d97706",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "#555",
+                  marginBottom: 6,
+                  fontWeight: 700,
+                }}
+              >
+                កំពុងរង់ចាំ
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#d97706" }}>
+                {stats.pending}
+              </div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <FilterOutlined />
+            </div>
+          </div>
+
+          {/* Moved Out Clients */}
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 5,
+              borderLeft: "5px solid #dc2626",
+              padding: "18px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "#555",
+                  marginBottom: 6,
+                  fontWeight: 700,
+                }}
+              >
+                បានចាកចេញ
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#dc2626" }}>
+                {stats.movedOut}
+              </div>
+            </div>
+            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+              <DeleteOutlined />
+            </div>
+          </div>
         </div>
-      </Card>
+      </div>
 
-      <ClientModal
-        open={openModal}
-        title={editingClient ? "កែប្រែអតិថិជន" : "បង្កើតអតិថិជន"}
-        initialValues={editingClient || undefined}
-        onCancel={() => {
-          setOpenModal(false);
-          setEditingClient(null);
-        }}
-        onSubmit={(values) => {
-          if (editingClient) {
-            console.log("update", values);
-          } else {
-            console.log("create", values);
-          }
+      {/* ── MAIN CARD ── */}
+      <div style={{ padding: "14px 20px 32px" }}>
+        <Card
+          variant="borderless"
+          style={{ borderRadius: 16 }}
+          styles={{ body: { padding: 0 } }}
+        >
+          {/* TOOLBAR */}
+          <div
+            style={{
+              padding: "16px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+              borderBottom: "1px solid #f1f5f9",
+            }}
+          >
+            {/* Left: search + filters */}
+            <div
+              style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1 }}
+            >
+              <Input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="ស្វែងរកតាមឈ្មោះ, លេខ, ឬបន្ទប់..."
+                prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+                allowClear
+                style={{
+                  width: 280,
+                  height: 42,
+                  borderRadius: 10,
+                  background: "#f9fafb",
+                  borderColor: "#e5e7eb",
+                }}
+              />
 
-          setOpenModal(false);
-          setEditingClient(null);
-        }}
-      />
+              {/* Status filter */}
+              <Select
+                value={selectedStatus}
+                onChange={(v) => {
+                  setSelectedStatus(v);
+                  setPage(1);
+                }}
+                style={{ width: 170, height: 42 }}
+                suffixIcon={<FilterOutlined style={{ color: "#9ca3af" }} />}
+                options={[
+                  { value: "", label: "គ្រប់ស្ថានភាព" },
+                  { value: "Active", label: "កំពុងស្នាក់" },
+                  { value: "Pending", label: "កំពុងរង់ចាំ" },
+                  { value: "MovedOut", label: "បានចាកចេញ" },
+                ]}
+                optionRender={(opt) => {
+                  const cfgMap: Record<string, { dot: string }> = {
+                    Active: { dot: "#22c55e" },
+                    Pending: { dot: "#f59e0b" },
+                    MovedOut: { dot: "#ef4444" },
+                  };
+                  const cfg = cfgMap[opt.value as string];
+                  return cfg ? (
+                    <span
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: cfg.dot,
+                          flexShrink: 0,
+                        }}
+                      />
+                      {opt.label}
+                    </span>
+                  ) : (
+                    <span>{opt.label}</span>
+                  );
+                }}
+              />
 
-      {/* LOCAL STYLE */}
-      <style>
-        {`
-          .ant-table {
-            background: transparent !important;
-          }
+              {/* Room filter */}
+              <Select
+                value={selectedRoom}
+                onChange={(v) => {
+                  setSelectedRoom(v);
+                  setPage(1);
+                }}
+                style={{ width: 150, height: 42 }}
+                suffixIcon={<HomeOutlined style={{ color: "#9ca3af" }} />}
+                options={roomOptions}
+              />
 
-          .ant-table-thead > tr > th {
-            background: #fafbfc !important;
-            color: #4f74e8 !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            border-bottom: 1px solid #eef2f7 !important;
-            padding-top: 14px !important;
-            padding-bottom: 14px !important;
-          }
+              {/* Clear filters */}
+              {activeFilterCount > 0 && (
+                <Button
+                  style={{
+                    height: 42,
+                    borderRadius: 10,
+                    color: "#6b7280",
+                    borderColor: "#e5e7eb",
+                  }}
+                  onClick={() => {
+                    setSelectedStatus("");
+                    setSelectedRoom("");
+                    setSearch("");
+                    setPage(1);
+                  }}
+                >
+                  លុបតម្រង ({activeFilterCount})
+                </Button>
+              )}
+            </div>
 
-          .ant-table-tbody > tr > td {
-            border-bottom: 1px solid #f3f4f6 !important;
-            color: #6b7280;
-            font-size: 14px;
-            padding-top: 12px !important;
-            padding-bottom: 12px !important;
-          }
+            {/* Right: add button */}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{
+                height: 42,
+                borderRadius: 10,
+                paddingInline: 20,
+                flexShrink: 0,
+              }}
+              onClick={() => {
+                setEditingClient(null);
+                setOpenModal(true);
+              }}
+            >
+              បង្កើត
+            </Button>
+          </div>
 
-          .ant-table-tbody > tr:nth-child(odd) > td {
-            background: #fafafa;
-          }
+          {/* TABLE */}
+          <div style={{ padding: "8px 16px 16px" }}>
+            <Table<ClientRow>
+              columns={columns}
+              dataSource={paginatedRows}
+              scroll={{ x: 900 }}
+              rowKey="key"
+              size="middle"
+              pagination={{
+                ...buildPeopleTablePagination({
+                  page,
+                  pageSize,
+                  total: filteredRows.length,
+                }),
 
-          .ant-table-tbody > tr:nth-child(even) > td {
-            background: #ffffff;
-          }
+                onChange: (p, ps) => {
+                  setPage(p);
+                  setPageSize(ps);
+                },
+              }}
+            />
+          </div>
+        </Card>
+      </div>
 
-          .ant-table-tbody > tr:hover > td {
-            background: #f3f7ff !important;
-          }
+      {/*
+        ClientModal placeholder — wire in your real modal:
+        <ClientModal
+          open={openModal}
+          title={editingClient ? "កែប្រែអតិថិជន" : "បន្ថែមអតិថិជន"}
+          initialValues={editingClient || undefined}
+          onCancel={() => { setOpenModal(false); setEditingClient(null); }}
+          onSubmit={(values) => {
+            console.log(editingClient ? "update" : "create", values);
+            setOpenModal(false); setEditingClient(null);
+          }}
+        />
+      */}
 
-          .ant-input:focus,
-          .ant-input-focused {
-            border-color: #4f74e8 !important;
-            box-shadow: 0 0 0 2px rgba(79, 116, 232, 0.08) !important;
-          }
+      {/* SCOPED STYLES */}
+      <style>{`
+        .ant-table { background: transparent !important; }
 
-          .ant-btn-primary:hover {
-            background: #3f63d8 !important;
-          }
-        `}
-      </style>
+        .ant-table-thead > tr > th {
+          background: #fafbfc !important;
+          color: #4f74e8 !important;
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          border-bottom: 1px solid #eef2f7 !important;
+          padding-top: 13px !important;
+          padding-bottom: 13px !important;
+        }
+
+        .ant-table-tbody > tr > td {
+          border-bottom: 1px solid #f3f4f6 !important;
+          font-size: 13px;
+          padding-top: 11px !important;
+          padding-bottom: 11px !important;
+        }
+
+        .ant-table-tbody > tr:nth-child(odd) > td  { background: #fafafa; }
+        .ant-table-tbody > tr:nth-child(even) > td { background: #ffffff; }
+        .ant-table-tbody > tr:hover > td           { background: #f3f7ff !important; }
+
+        .ant-input:focus, .ant-input-focused {
+          border-color: #4f74e8 !important;
+          box-shadow: 0 0 0 2px rgba(79,116,232,0.08) !important;
+        }
+
+        .ant-btn-primary:hover { background: #3f63d8 !important; }
+
+        .ant-select-selector {
+          border-radius: 10px !important;
+          background: #f9fafb !important;
+          border-color: #e5e7eb !important;
+        }
+        .ant-select-focused .ant-select-selector {
+          border-color: #4f74e8 !important;
+          box-shadow: 0 0 0 2px rgba(79,116,232,0.08) !important;
+        }
+      `}</style>
     </div>
   );
 }

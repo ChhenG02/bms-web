@@ -1,6 +1,7 @@
 import {
   BarChartOutlined,
   DesktopOutlined,
+  FileTextOutlined,
   SettingOutlined,
   TeamOutlined,
   UserOutlined,
@@ -34,11 +35,11 @@ export const navigationItems: NavigationItem[] = [
     group: "group",
     children: [
       {
-        key: "/client",
-        label: "អតិថិជន",
-        title: "អតិថិជន",
-        path: "/client",
-        icon: <TeamOutlined />,
+        key: "/bill",
+        label: "វិក័យប័ត្រ",
+        title: "វិក័យប័ត្រ",
+        path: "/bill",
+        icon: <FileTextOutlined />,
       },
       {
         key: "/energy-usage",
@@ -78,14 +79,20 @@ export const navigationItems: NavigationItem[] = [
         // ],
       },
 
-      
+      {
+        key: "/client",
+        label: "អតិថិជន",
+        title: "អតិថិជន",
+        path: "/client",
+        icon: <TeamOutlined />,
+      },
     ],
   },
   {
-        key: "/settings",
-        label: "ការកំណត់",
-        title: "ការកំណត់",
-        path: "/settings",
-        icon: <SettingOutlined />,
-      },
+    key: "/settings",
+    label: "ការកំណត់",
+    title: "ការកំណត់",
+    path: "/settings",
+    icon: <SettingOutlined />,
+  },
 ];
