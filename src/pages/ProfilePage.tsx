@@ -43,10 +43,10 @@ interface ProfileState {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
-  "Super Admin": { bg: "#eff2ff", color: "#4f74e8" },
-  Admin: { bg: "#f5f3ff", color: "#7c3aed" },
-  Staff: { bg: "#ecfeff", color: "#0891b2" },
+const ROLE_STYLE: Record<string, { bg: string }> = {
+  "Super Admin": { bg: "#eff2ff"},
+  Admin: { bg: "#f5f3ff"},
+  Staff: { bg: "#ecfeff" },
 };
 
 // ─── Main Component ──────────────────────────────────────────────────────────
@@ -184,15 +184,14 @@ function ProfilePage() {
                       fontWeight: 600,
                       fontSize: 12,
                       background: roleStyle.bg,
-                      color: roleStyle.color,
                       border: "none",
                     }}
                   >
                     {profile.role}
                   </Tag>
-                  <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 6 }}>
+                  {/* <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 6 }}>
                     តួនាទីត្រូវបានគ្រប់គ្រងដោយ Super Admin
-                  </div>
+                  </div> */}
                 </Descriptions.Item>
               </Descriptions>
 
@@ -329,7 +328,7 @@ function ProfilePage() {
                     style={{ ...inputStyle, background: "#f9fafb" }}
                   />
                   <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 6 }}>
-                    តួនាទីត្រូវបានគ្រប់គ្រងដោយ Super Admin
+                    
                   </div>
                 </Col>
               </Row>
@@ -644,7 +643,6 @@ function ProfilePage() {
                     fontWeight: 600,
                     fontSize: 11,
                     background: roleStyle.bg,
-                    color: roleStyle.color,
                     border: "none",
                   }}
                 >

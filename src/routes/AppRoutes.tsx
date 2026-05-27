@@ -5,7 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import ClientPage from "../pages/client/ClientPage";
 import ClientPageDetail from "../pages/client/ClientPageDetail";
 
-import DashboardPage from "../pages/dashboard/DashboardPage";
+// import DashboardPage from "../pages/dashboard/DashboardPage";
 
 import SettingsPage from "../pages/setting/SettingsPage";
 import UsersPage from "../pages/profile/user/UsersPage";
@@ -17,10 +17,10 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<DashboardLayout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route index element={<Navigate to="/bill" replace />} />
 
         {/* DASHBOARD */}
-        <Route path="dashboard" element={<DashboardPage />} />
+        {/* <Route path="dashboard" element={<DashboardPage />} /> */}
 
         {/* USERS */}
         <Route path="users" element={<UsersPage />} />

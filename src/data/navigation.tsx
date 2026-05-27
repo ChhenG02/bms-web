@@ -1,6 +1,6 @@
 import {
   BarChartOutlined,
-  DesktopOutlined,
+  // DesktopOutlined,
   FileTextOutlined,
   SettingOutlined,
   TeamOutlined,
@@ -20,13 +20,13 @@ export type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
-  {
-    key: "/dashboard",
-    label: "ផ្ទាំងគ្រប់គ្រង",
-    title: "ផ្ទាំងគ្រប់គ្រង",
-    path: "/dashboard",
-    icon: <DesktopOutlined />,
-  },
+  // {
+  //   key: "/dashboard",
+  //   label: "ផ្ទាំងគ្រប់គ្រង",
+  //   title: "ផ្ទាំងគ្រប់គ្រង",
+  //   path: "/dashboard",
+  //   icon: <DesktopOutlined />,
+  // },
 
   {
     key: "information-management",
