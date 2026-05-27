@@ -41,6 +41,14 @@ export const navigationItems: NavigationItem[] = [
         path: "/bill",
         icon: <FileTextOutlined />,
       },
+
+            {
+        key: "/client",
+        label: "អតិថិជន",
+        title: "អតិថិជន",
+        path: "/client",
+        icon: <TeamOutlined />,
+      },
       {
         key: "/energy-usage",
         label: "ទំហំថាមពលប្រើប្រាស់",
@@ -79,13 +87,7 @@ export const navigationItems: NavigationItem[] = [
         // ],
       },
 
-      {
-        key: "/client",
-        label: "អតិថិជន",
-        title: "អតិថិជន",
-        path: "/client",
-        icon: <TeamOutlined />,
-      },
+
     ],
   },
   {

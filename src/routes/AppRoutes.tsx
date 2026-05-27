@@ -7,11 +7,9 @@ import ClientPageDetail from "../pages/client/ClientPageDetail";
 
 import DashboardPage from "../pages/dashboard/DashboardPage";
 
-import DepartmentsPage from "../pages/PermissionPage";
-import SettingsPage from "../pages/SettingsPage";
-import UsersPage from "../pages/UsersPage";
+import SettingsPage from "../pages/setting/SettingsPage";
+import UsersPage from "../pages/profile/user/UsersPage";
 import EnergyUsagePage from "../pages/energy-usage/EnergyUsagePage";
-import PermissionPage from "../pages/PermissionPage";
 import ProfilePage from "../pages/ProfilePage";
 import BillPage from "../pages/bill/BillPage";
 
@@ -26,11 +24,6 @@ function AppRoutes() {
 
         {/* USERS */}
         <Route path="users" element={<UsersPage />} />
-        <Route path="permissions" element={<PermissionPage />} />
-
-
-        {/* DEPARTMENTS */}
-        <Route path="departments" element={<DepartmentsPage />} />
 
         {/* CLIENT */}
         <Route path="client" element={<ClientPage />} />

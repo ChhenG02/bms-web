@@ -14,98 +14,9 @@ import type { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { NavLink, useNavigate } from "react-router-dom";
+import { CLIENTS, type ClientRow, type ClientStatus } from "../../data/clientData";
 import { buildPeopleTablePagination } from "../../utils/pagination";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export type ClientStatus = "Active" | "Pending" | "MovedOut";
-
-export interface ClientRow {
-  key: string;
-  id: string;
-  name: string;
-  phone: string;
-  room: string;
-  moveInDate: string;
-  status: ClientStatus;
-}
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const CLIENTS: ClientRow[] = [
-  {
-    key: "1",
-    id: "C-001",
-    name: "សុខ សុភា",
-    phone: "012 345 678",
-    room: "A01",
-    moveInDate: "01/01/2024",
-    status: "Active",
-  },
-  {
-    key: "2",
-    id: "C-002",
-    name: "វង្ស ចន្ថា",
-    phone: "011 222 333",
-    room: "A02",
-    moveInDate: "15/03/2024",
-    status: "Pending",
-  },
-  {
-    key: "3",
-    id: "C-003",
-    name: "ហេង សុវណ្ណ",
-    phone: "096 111 222",
-    room: "B01",
-    moveInDate: "10/06/2023",
-    status: "Active",
-  },
-  {
-    key: "4",
-    id: "C-004",
-    name: "ម៉ៅ ច័ន្ទបូ",
-    phone: "078 444 555",
-    room: "B02",
-    moveInDate: "20/09/2023",
-    status: "MovedOut",
-  },
-  {
-    key: "5",
-    id: "C-005",
-    name: "ទូច រ៉ាណា",
-    phone: "085 666 777",
-    room: "C01",
-    moveInDate: "05/11/2023",
-    status: "Active",
-  },
-  {
-    key: "6",
-    id: "C-006",
-    name: "ឃុន លីណា",
-    phone: "093 888 999",
-    room: "C02",
-    moveInDate: "01/02/2024",
-    status: "Active",
-  },
-  {
-    key: "7",
-    id: "C-007",
-    name: "នួន សុធារ៉ា",
-    phone: "077 000 111",
-    room: "D01",
-    moveInDate: "12/04/2024",
-    status: "Pending",
-  },
-  {
-    key: "8",
-    id: "C-008",
-    name: "ស៊ិន វិចិត្រ",
-    phone: "010 123 456",
-    room: "D02",
-    moveInDate: "30/07/2023",
-    status: "Active",
-  },
-];
+import ClientForm from "./ClientForm";
 
 // ─── Status Tag ───────────────────────────────────────────────────────────────
 
@@ -195,6 +106,7 @@ function ClientPage() {
       rows = rows.filter(
         (r) =>
           r.name.toLowerCase().includes(kw) ||
+          r.clientCode.toLowerCase().includes(kw) ||
           r.id.toLowerCase().includes(kw) ||
           r.phone.toLowerCase().includes(kw) ||
           r.room.toLowerCase().includes(kw),
@@ -224,14 +136,22 @@ function ClientPage() {
   const roomOptions = useMemo(() => {
     const rooms = Array.from(new Set(CLIENTS.map((r) => r.room))).sort();
     return [
-      { value: "", label: "គ្រប់បន្ទប់" },
+      { value: "", label: "ទាំងអស់" },
       ...rooms.map((r) => ({ value: r, label: `បន្ទប់ ${r}` })),
     ];
   }, []);
 
-  const activeFilterCount = [selectedStatus, selectedRoom].filter(
-    Boolean,
-  ).length;
+  // Check if any filter has a value selected (not default/empty)
+  const hasActiveFilters = useMemo(() => {
+    return selectedStatus !== "" || selectedRoom !== "" || debouncedSearch.trim() !== "";
+  }, [selectedStatus, selectedRoom, debouncedSearch]);
+
+  const handleClearFilters = () => {
+    setSelectedStatus("");
+    setSelectedRoom("");
+    setSearch("");
+    setPage(1);
+  };
 
   const columns: ColumnsType<ClientRow> = [
     {
@@ -388,9 +308,8 @@ function ClientPage() {
   ];
 
   return (
-    <div style={{ background: "#f6f8fb", minHeight: "100vh" }}>
+    <div>
       {/* ── STAT CARDS (Dashboard Style) ── */}
-      <div style={{ padding: "20px 20px 0" }}>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
           {/* Total Clients */}
           <div
@@ -532,16 +451,16 @@ function ClientPage() {
             </div>
           </div>
         </div>
-      </div>
+   
 
       {/* ── MAIN CARD ── */}
-      <div style={{ padding: "14px 20px 32px" }}>
+      <div style={{ paddingTop: "20px" }}>
         <Card
           variant="borderless"
           style={{ borderRadius: 16 }}
           styles={{ body: { padding: 0 } }}
         >
-          {/* TOOLBAR */}
+          {/* TOOLBAR - First Row */}
           <div
             style={{
               padding: "16px 20px",
@@ -553,28 +472,59 @@ function ClientPage() {
               borderBottom: "1px solid #f1f5f9",
             }}
           >
-            {/* Left: search + filters */}
-            <div
-              style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1 }}
-            >
-              <Input
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="ស្វែងរកតាមឈ្មោះ, លេខ, ឬបន្ទប់..."
-                prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
-                allowClear
-                style={{
-                  width: 280,
-                  height: 42,
-                  borderRadius: 10,
-                  background: "#f9fafb",
-                  borderColor: "#e5e7eb",
-                }}
-              />
+            {/* Search input - extended width */}
+            <Input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder="ស្វែងរកតាមឈ្មោះ, លេខ, ឬបន្ទប់..."
+              prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+              allowClear
+              style={{
+                width: "100%",
+                maxWidth: 420,
+                height: 42,
+                borderRadius: 10,
+                background: "#f9fafb",
+                borderColor: "#e5e7eb",
+              }}
+            />
 
+            {/* Right: add button */}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{
+                height: 42,
+                borderRadius: 10,
+                paddingInline: 20,
+                flexShrink: 0,
+              }}
+              onClick={() => {
+                setEditingClient(null);
+                setOpenModal(true);
+              }}
+            >
+              បង្កើត
+            </Button>
+          </div>
+
+          {/* FILTERS - Second Row (Always visible) */}
+          <div
+            style={{
+              padding: "12px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+              borderBottom: "1px solid #f1f5f9",
+              background: "#fafbfc",
+            }}
+          >
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1 }}>
               {/* Status filter */}
               <Select
                 value={selectedStatus}
@@ -585,7 +535,7 @@ function ClientPage() {
                 style={{ width: 170, height: 42 }}
                 suffixIcon={<FilterOutlined style={{ color: "#9ca3af" }} />}
                 options={[
-                  { value: "", label: "គ្រប់ស្ថានភាព" },
+                  { value: "", label: "ទាំងអស់" },
                   { value: "Active", label: "កំពុងស្នាក់" },
                   { value: "Pending", label: "កំពុងរង់ចាំ" },
                   { value: "MovedOut", label: "បានចាកចេញ" },
@@ -629,45 +579,22 @@ function ClientPage() {
                 suffixIcon={<HomeOutlined style={{ color: "#9ca3af" }} />}
                 options={roomOptions}
               />
-
-              {/* Clear filters */}
-              {activeFilterCount > 0 && (
-                <Button
-                  style={{
-                    height: 42,
-                    borderRadius: 10,
-                    color: "#6b7280",
-                    borderColor: "#e5e7eb",
-                  }}
-                  onClick={() => {
-                    setSelectedStatus("");
-                    setSelectedRoom("");
-                    setSearch("");
-                    setPage(1);
-                  }}
-                >
-                  លុបតម្រង ({activeFilterCount})
-                </Button>
-              )}
             </div>
 
-            {/* Right: add button */}
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={{
-                height: 42,
-                borderRadius: 10,
-                paddingInline: 20,
-                flexShrink: 0,
-              }}
-              onClick={() => {
-                setEditingClient(null);
-                setOpenModal(true);
-              }}
-            >
-              បង្កើត
-            </Button>
+            {/* Clear filters button - Only shows when filters are active */}
+            {hasActiveFilters && (
+              <Button
+                style={{
+                  height: 42,
+                  borderRadius: 10,
+                  color: "#6b7280",
+                  borderColor: "#e5e7eb",
+                }}
+                onClick={handleClearFilters}
+              >
+                ជម្រះតម្រង
+              </Button>
+            )}
           </div>
 
           {/* TABLE */}
@@ -695,19 +622,30 @@ function ClientPage() {
         </Card>
       </div>
 
-      {/*
-        ClientModal placeholder — wire in your real modal:
-        <ClientModal
-          open={openModal}
-          title={editingClient ? "កែប្រែអតិថិជន" : "បន្ថែមអតិថិជន"}
-          initialValues={editingClient || undefined}
-          onCancel={() => { setOpenModal(false); setEditingClient(null); }}
-          onSubmit={(values) => {
-            console.log(editingClient ? "update" : "create", values);
-            setOpenModal(false); setEditingClient(null);
-          }}
-        />
-      */}
+      <ClientForm
+        open={openModal}
+        title={editingClient ? "កែប្រែអតិថិជន" : "បន្ថែមអតិថិជន"}
+        initialValues={
+          editingClient
+            ? {
+                customerCode: editingClient.clientCode,
+                name: editingClient.name,
+                phone: editingClient.phone,
+                meterCode: editingClient.meterCode,
+                installDate: editingClient.installDate,
+              }
+            : undefined
+        }
+        onCancel={() => {
+          setOpenModal(false);
+          setEditingClient(null);
+        }}
+        onSubmit={(values) => {
+          console.log(editingClient ? "update" : "create", values);
+          setOpenModal(false);
+          setEditingClient(null);
+        }}
+      />
 
       {/* SCOPED STYLES */}
       <style>{`

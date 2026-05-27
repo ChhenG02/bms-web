@@ -16,6 +16,8 @@ import {
   message,
   Table,
   Tag,
+  Select,
+  Space,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMemo, useState } from "react";
@@ -87,30 +89,59 @@ const USERS: UserRow[] = [
 function UsersPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [openModal, setOpenModal] = useState(false);
   const [, setEditingUser] = useState<UserRow | null>(null);
 
+  const hasActiveFilters =
+    debouncedSearch.trim() !== "" ||
+    roleFilter !== "all" ||
+    statusFilter !== "all";
+
   const { modal } = App.useApp();
 
   const filteredRows = useMemo(() => {
-    if (!debouncedSearch.trim()) return USERS;
-    const kw = debouncedSearch.toLowerCase();
-    return USERS.filter(
-      (r) =>
-        r.name.toLowerCase().includes(kw) ||
-        r.email.toLowerCase().includes(kw) ||
-        r.role.toLowerCase().includes(kw) ||
-        r.gender.includes(kw) ||
-        r.createdAt.toLowerCase().includes(kw),
-    );
-  }, [debouncedSearch]);
+    let filtered = USERS;
+
+    // Apply search filter
+    if (debouncedSearch.trim()) {
+      const kw = debouncedSearch.toLowerCase();
+      filtered = filtered.filter(
+        (r) =>
+          r.name.toLowerCase().includes(kw) ||
+          r.email.toLowerCase().includes(kw) ||
+          r.role.toLowerCase().includes(kw) ||
+          r.gender.includes(kw) ||
+          r.createdAt.toLowerCase().includes(kw),
+      );
+    }
+
+    // Apply role filter
+    if (roleFilter !== "all") {
+      filtered = filtered.filter((r) => r.role === roleFilter);
+    }
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((r) => r.status === statusFilter);
+    }
+
+    return filtered;
+  }, [debouncedSearch, roleFilter, statusFilter]);
 
   const paginatedRows = useMemo(() => {
     const start = (page - 1) * pageSize;
     return filteredRows.slice(start, start + pageSize);
   }, [filteredRows, page, pageSize]);
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setRoleFilter("all");
+    setStatusFilter("all");
+  };
 
   const columns: ColumnsType<UserRow> = [
     {
@@ -122,32 +153,48 @@ function UsersPage() {
         <span style={{ color: "#6b7280", fontWeight: 500 }}>{v}</span>
       ),
     },
+{
+  title: "ឈ្មោះពេញ",
+  key: "user",
+  width: 240,
 
-    {
-      title: "រូបភាព",
-      key: "avatar",
-      width: 80,
-      render: (_, record) =>
-        record.avatar ? (
-          <Avatar src={record.avatar} size={40} />
-        ) : (
-          <Avatar
-            size={40}
-            icon={<UserOutlined />}
-            style={{ background: "#e0e7ff", color: "#4f74e8" }}
-          />
-        ),
-    },
+  render: (_, record) => (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+      }}
+    >
+      {record.avatar ? (
+        <Avatar
+          src={record.avatar}
+          size={40}
+        />
+      ) : (
+        <Avatar
+          size={40}
+          icon={<UserOutlined />}
+          style={{
+            background: "#e0e7ff",
+            color: "#4f74e8",
+            flexShrink: 0,
+          }}
+        />
+      )}
 
-    {
-      title: "ឈ្មោះពេញ",
-      dataIndex: "name",
-      key: "name",
-      width: 180,
-      render: (v: string) => (
-        <span style={{ color: "#374151", fontWeight: 600 }}>{v}</span>
-      ),
-    },
+      <div
+        style={{
+          color: "#374151",
+          fontWeight: 600,
+          lineHeight: 1.2,
+        }}
+      >
+        {record.name}
+      </div>
+    </div>
+  ),
+},
 
     {
       title: "ភេទ",
@@ -303,10 +350,10 @@ function UsersPage() {
   return (
     <div style={{ background: "#f6f8fb", minHeight: "100vh" }}>
       <Card variant="borderless" styles={{ body: { padding: 0 } }}>
-        {/* TOOLBAR */}
+        {/* TOOLBAR - First Row */}
         <div
           style={{
-            padding: 20,
+            padding: "20px 20px 16px 20px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -322,6 +369,7 @@ function UsersPage() {
             prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
             allowClear
             style={{
+              width: "100%",
               maxWidth: 420,
               height: 44,
               borderRadius: 10,
@@ -340,8 +388,60 @@ function UsersPage() {
               cursor: "not-allowed",
             }}
           >
-            បង្កើតថ្មី
+            បង្កើត
           </Button>
+        </div>
+
+        {/* FILTERS - Second Row */}
+        <div
+          style={{
+            padding: "12px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 16,
+            flexWrap: "wrap",
+            borderBottom: "1px solid #f1f5f9",
+            background: "#fafbfc",
+          }}
+        >
+          <Space size={12} wrap>
+            <Select
+              value={roleFilter}
+              onChange={setRoleFilter}
+              style={{ width: 180 }}
+              placeholder="ជ្រើសរើសតួនាទី"
+              options={[
+                { value: "all", label: "ទាំងអស់" },
+                { value: "Super Admin", label: "Super Admin" },
+                { value: "Admin", label: "Admin" },
+                { value: "Staff", label: "Staff" },
+              ]}
+            />
+            <Select
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: 150 }}
+              placeholder="ជ្រើសរើសស្ថានភាព"
+              options={[
+                { value: "all", label: "ទាំងអស់" },
+                { value: "Active", label: "សកម្ម" },
+                { value: "Inactive", label: "អសកម្ម" },
+              ]}
+            />
+          </Space>
+          {hasActiveFilters && (
+            <Button
+              onClick={handleClearFilters}
+              style={{
+                height: 36,
+                borderRadius: 8,
+                color: "#6b7280",
+              }}
+            >
+              ជម្រះតម្រង
+            </Button>
+          )}
         </div>
 
         {/* TABLE */}
@@ -426,6 +526,12 @@ function UsersPage() {
         }
         .ant-btn-primary:hover {
           background: #3f63d8 !important;
+        }
+        .ant-select-focused .ant-select-selector,
+        .ant-select-selector:focus,
+        .ant-select-selector:hover {
+          border-color: #4f74e8 !important;
+          box-shadow: 0 0 0 2px rgba(79, 116, 232, 0.08) !important;
         }
       `}</style>
     </div>

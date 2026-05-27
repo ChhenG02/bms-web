@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import {
   Breadcrumb,
+  Button,
   Card,
   Col,
   Row,
@@ -13,11 +14,10 @@ import {
   Table,
   Tag,
   Typography,
-  Button,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { NavLink, useParams } from "react-router-dom";
-import { CLIENTS } from "../../data/clientData";
+import { CLIENTS, type BillHistory } from "../../data/clientData";
 import { buildHistoryTablePagination } from "../../utils/pagination";
 
 import InvoiceTemplate from "../../components/InvoiceTemplate";
@@ -27,16 +27,7 @@ import PDFPreviewOverlay from "../../utils/PDFPreviewOverlay";
 
 const { Title, Text } = Typography;
 
-type BillHistoryRow = {
-  key: string;
-  no: string;
-  dateRange: string;
-  oldReading: number;
-  newReading: number;
-  usage: string;
-  total: string;
-  status: "Paid" | "Unpaid";
-};
+type BillHistoryRow = BillHistory;
 
 function ClientPageDetail() {
   const { id } = useParams();
@@ -157,7 +148,7 @@ function ClientPageDetail() {
       width: 100,
       align: "center",
 
-      render: () => (
+      render: (_: unknown, record: BillHistoryRow) => (
         <Button
           type="text"
           icon={<PrinterOutlined />}
@@ -166,7 +157,7 @@ function ClientPageDetail() {
           }}
           onClick={async () => {
             const url = await generatePDFBlobUrl({
-              elementId: "invoice-pdf",
+              elementId: `invoice-pdf-${record.key}`,
             });
 
             if (!url) return;
@@ -348,15 +339,22 @@ function ClientPageDetail() {
         }}
       />
 
-      <div
-        style={{
-          position: "fixed",
-          left: "-99999px",
-          top: 0,
-        }}
-      >
-        <InvoiceTemplate client={client} />
-      </div>
+      {rows.map((row) => (
+        <div
+          key={row.key}
+          style={{
+            position: "fixed",
+            left: "-99999px",
+            top: 0,
+          }}
+        >
+          <InvoiceTemplate
+            client={client}
+            history={row}
+            invoiceId={`invoice-pdf-${row.key}`}
+          />
+        </div>
+      ))}
 
       {/* LOCAL STYLE */}
       <style>

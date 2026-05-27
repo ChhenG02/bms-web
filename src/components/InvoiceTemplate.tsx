@@ -4,32 +4,31 @@ import type { BillHistory, ClientRow } from "../data/clientData";
 
 type Props = {
   client: ClientRow;
+  history?: BillHistory;
+  invoiceId?: string;
 };
 
-function InvoiceTemplate({ client }: Props) {
-  // fallback if no histories
-  const rows: BillHistory[] =
-    client.histories?.length > 0
+function InvoiceTemplate({
+  client,
+  history,
+  invoiceId = "invoice-pdf",
+}: Props) {
+  const fallbackHistory: BillHistory = {
+    key: `${client.id}-history-1`,
+    no: "01",
+    dateRange: `${client.installDate} - ${client.lastDate}`,
+    oldReading: client.oldReading,
+    newReading: client.newReading,
+    usage: client.usage,
+    total: client.total,
+    status: "Unpaid",
+  };
+
+  const rows: BillHistory[] = history
+    ? [history]
+    : client.histories?.length > 0
       ? client.histories
-      : [
-          {
-            key: `${client.id}-history-1`,
-
-            no: "01",
-
-            dateRange: `${client.installDate} - ${client.lastDate}`,
-
-            oldReading: client.oldReading,
-
-            newReading: client.newReading,
-
-            usage: client.usage,
-
-            total: client.total,
-
-            status: client.status,
-          },
-        ];
+      : [fallbackHistory];
 
   // dynamic total
   const grandTotal = rows.reduce((sum, row) => {
@@ -42,7 +41,7 @@ function InvoiceTemplate({ client }: Props) {
 
   return (
     <div
-      id="invoice-pdf"
+      id={invoiceId}
       style={{
         background: "#fff",
         padding: "32px 40px",

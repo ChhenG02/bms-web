@@ -184,14 +184,14 @@ const BILLS: BillRow[] = [
 // ─── Month options ───────────────────────────────────────────────────────────
 
 const MONTH_OPTIONS = [
-  { value: "", label: "គ្រប់ខែ" },
+  { value: "", label: "ទាំងអស់" },
   { value: "2025-05", label: "ឧសភា 2025" },
   { value: "2025-04", label: "មេសា 2025" },
   { value: "2025-03", label: "មីនា 2025" },
 ];
 
 const STATUS_OPTIONS = [
-  { value: "", label: "គ្រប់ស្ថានភាព" },
+  { value: "", label: "ទាំងអស់" },
   { value: "Paid", label: "បានបង់" },
   { value: "Unpaid", label: "មិនទាន់បង់" },
   { value: "Overdue", label: "ហួសកំណត់" },
@@ -292,6 +292,18 @@ function BillPage() {
     const start = (page - 1) * pageSize;
     return filteredRows.slice(start, start + pageSize);
   }, [filteredRows, page, pageSize]);
+
+  // Check if any filter is active
+  const hasActiveFilters = useMemo(() => {
+    return selectedMonth !== "" || selectedStatus !== "" || debouncedSearch.trim() !== "";
+  }, [selectedMonth, selectedStatus, debouncedSearch]);
+
+  const handleClearFilters = () => {
+    setSelectedMonth("");
+    setSelectedStatus("");
+    setSearch("");
+    setPage(1);
+  };
 
   const handleGenerateBills = (values: GenerateBillsFormValues) => {
     console.log("Generating bills with:", values);
@@ -461,120 +473,124 @@ function BillPage() {
   ];
 
   return (
-    <div style={{ background: "#f6f8fb", minHeight: "100vh" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      }}
+    >
       {/* ── STAT CARDS (Client Page Style) ── */}
-      <div style={{ padding: "20px 20px 0" }}>
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 5,
-              borderLeft: "5px solid #4f74e8",
-              padding: "18px 20px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
-                ​វិក្កយបត្រសរុប
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#4f74e8" }}>{stats.total}</div>
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 5,
+            borderLeft: "5px solid #4f74e8",
+            padding: "18px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+              ​វិក្កយបត្រសរុប
             </div>
-            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
-              <CalendarOutlined />
-            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#4f74e8" }}>{stats.total}</div>
           </div>
-
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 5,
-              borderLeft: "5px solid #16a34a",
-              padding: "18px 20px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
-                បានបង់
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#16a34a" }}>{stats.paid}</div>
-            </div>
-            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
-              <CheckOutlined />
-            </div>
+          <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+            <CalendarOutlined />
           </div>
+        </div>
 
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 5,
-              borderLeft: "5px solid #dc2626",
-              padding: "18px 20px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
-                មិនទាន់បង់
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#dc2626" }}>{stats.unpaid}</div>
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 5,
+            borderLeft: "5px solid #16a34a",
+            padding: "18px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+              បានបង់
             </div>
-            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
-              <DeleteOutlined />
-            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#16a34a" }}>{stats.paid}</div>
           </div>
+          <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+            <CheckOutlined />
+          </div>
+        </div>
 
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 5,
-              borderLeft: "5px solid #d97706",
-              padding: "18px 20px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
-                ហួសកំណត់
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#d97706" }}>{stats.overdue}</div>
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 5,
+            borderLeft: "5px solid #dc2626",
+            padding: "18px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+              មិនទាន់បង់
             </div>
-            <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
-              <FilterOutlined />
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#dc2626" }}>{stats.unpaid}</div>
+          </div>
+          <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+            <DeleteOutlined />
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 5,
+            borderLeft: "5px solid #d97706",
+            padding: "18px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 700 }}>
+              ហួសកំណត់
             </div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#d97706" }}>{stats.overdue}</div>
+          </div>
+          <div style={{ fontSize: 32, color: "#bdbdbd", opacity: 0.5 }}>
+            <FilterOutlined />
           </div>
         </div>
       </div>
 
       {/* ── MAIN TABLE CARD ── */}
-      <div style={{ padding: "14px 20px 32px" }}>
+      <div style={{ paddingTop: "20px" }}>
         <Card
           variant="borderless"
           styles={{ body: { padding: 0 } }}
           style={{ borderRadius: 16 }}
         >
-          {/* TOOLBAR */}
+          {/* TOOLBAR - First Row */}
           <div
             style={{
               padding: "16px 20px",
@@ -586,65 +602,27 @@ function BillPage() {
               borderBottom: "1px solid #f1f5f9",
             }}
           >
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1 }}>
-              <Input
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="ស្វែងរកតាមឈ្មោះ, លេខ..."
-                prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
-                allowClear
-                style={{
-                  width: 240,
-                  height: 42,
-                  borderRadius: 10,
-                  background: "#f9fafb",
-                  borderColor: "#e5e7eb",
-                }}
-              />
-              <Select
-                value={selectedMonth}
-                onChange={(v) => {
-                  setSelectedMonth(v);
-                  setPage(1);
-                }}
-                options={MONTH_OPTIONS}
-                style={{ width: 170, height: 42 }}
-                suffixIcon={<CalendarOutlined style={{ color: "#9ca3af" }} />}
-              />
-              <Select
-                value={selectedStatus}
-                onChange={(v) => {
-                  setSelectedStatus(v);
-                  setPage(1);
-                }}
-                options={STATUS_OPTIONS}
-                style={{ width: 170, height: 42 }}
-                suffixIcon={<FilterOutlined style={{ color: "#9ca3af" }} />}
-              />
+            {/* Search input - extended width */}
+            <Input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder="ស្វែងរកតាមឈ្មោះ, លេខ..."
+              prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+              allowClear
+              style={{
+                width: "100%",
+                maxWidth: 420,
+                height: 42,
+                borderRadius: 10,
+                background: "#f9fafb",
+                borderColor: "#e5e7eb",
+              }}
+            />
 
-              {(selectedMonth || selectedStatus) && (
-                <Button
-                  style={{
-                    height: 42,
-                    borderRadius: 10,
-                    color: "#6b7280",
-                    borderColor: "#e5e7eb",
-                  }}
-                  onClick={() => {
-                    setSelectedMonth("");
-                    setSelectedStatus("");
-                    setSearch("");
-                    setPage(1);
-                  }}
-                >
-                  លុបតម្រង ({[selectedMonth && "ខែ", selectedStatus && "ស្ថានភាព"].filter(Boolean).length})
-                </Button>
-              )}
-            </div>
-
+            {/* Action Buttons */}
             <div style={{ display: "flex", gap: 10 }}>
               <Button
                 icon={<DownloadOutlined />}
@@ -661,6 +639,61 @@ function BillPage() {
                 បង្កើត
               </Button>
             </div>
+          </div>
+
+          {/* FILTERS - Second Row (Always visible) */}
+          <div
+            style={{
+              padding: "12px 20px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+              borderBottom: "1px solid #f1f5f9",
+              background: "#fafbfc",
+            }}
+          >
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1 }}>
+              {/* Month filter */}
+              <Select
+                value={selectedMonth}
+                onChange={(v) => {
+                  setSelectedMonth(v);
+                  setPage(1);
+                }}
+                options={MONTH_OPTIONS}
+                style={{ width: 170, height: 42 }}
+                suffixIcon={<CalendarOutlined style={{ color: "#9ca3af" }} />}
+              />
+
+              {/* Status filter */}
+              <Select
+                value={selectedStatus}
+                onChange={(v) => {
+                  setSelectedStatus(v);
+                  setPage(1);
+                }}
+                options={STATUS_OPTIONS}
+                style={{ width: 170, height: 42 }}
+                suffixIcon={<FilterOutlined style={{ color: "#9ca3af" }} />}
+              />
+            </div>
+
+            {/* Clear filters button - Only shows when filters are active */}
+            {hasActiveFilters && (
+              <Button
+                style={{
+                  height: 42,
+                  borderRadius: 10,
+                  color: "#6b7280",
+                  borderColor: "#e5e7eb",
+                }}
+                onClick={handleClearFilters}
+              >
+                ជម្រះតម្រង
+              </Button>
+            )}
           </div>
 
           {/* TABLE */}

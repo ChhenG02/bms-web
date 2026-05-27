@@ -1,4 +1,6 @@
-export type ClientStatus = "Paid" | "Unpaid";
+export type ClientStatus = "Active" | "Pending" | "MovedOut";
+
+export type BillStatus = "Paid" | "Unpaid";
 
 export type BillHistory = {
   key: string;
@@ -8,34 +10,28 @@ export type BillHistory = {
   newReading: number;
   usage: string;
   total: string;
-  status: ClientStatus;
+  status: BillStatus;
 };
 
 export type ClientRow = {
   id: string;
   key: string;
-
   clientCode: string;
   meterCode: string;
-
   name: string;
   gender: string;
-
+  phone: string;
   phoneNumber: string;
-
+  room: string;
+  moveInDate: string;
   installDate: string;
   lastDate: string;
-
   note: string;
-
   oldReading: number;
   newReading: number;
-
   usage: string;
   total: string;
-
   status: ClientStatus;
-
   histories: BillHistory[];
 };
 
@@ -43,28 +39,22 @@ export const CLIENTS: ClientRow[] = [
   {
     id: "01",
     key: "1",
-
     clientCode: "NP0392929",
     meterCode: "00019292",
-
     name: "ចិន សាវ៉ាត",
-
     gender: "ប្រុស",
+    phone: "012 345 444",
     phoneNumber: "012 345 444",
-
+    room: "A01",
+    moveInDate: "01/01/2024",
     installDate: "12 Jan 2020",
     lastDate: "10 Jan 2021",
-
     note: "N/A",
-
     oldReading: 80,
     newReading: 120,
-
     usage: "40kwh",
     total: "40,000៛",
-
-    status: "Unpaid",
-
+    status: "Active",
     histories: [
       {
         key: "1",
@@ -76,7 +66,6 @@ export const CLIENTS: ClientRow[] = [
         total: "177,000៛",
         status: "Unpaid",
       },
-
       {
         key: "2",
         no: "02",
@@ -89,32 +78,25 @@ export const CLIENTS: ClientRow[] = [
       },
     ],
   },
-
   {
     id: "02",
     key: "2",
-
     clientCode: "NP0392930",
     meterCode: "00019293",
-
     name: "សុខ សុភ័ណ្ឌ",
     gender: "ស្រី",
-
-    phoneNumber: "012 345 444",
-
+    phone: "011 222 333",
+    phoneNumber: "011 222 333",
+    room: "A02",
+    moveInDate: "15/03/2024",
     installDate: "15 Feb 2020",
     lastDate: "10 Jan 2021",
-
     note: "VIP",
-
     oldReading: 250,
     newReading: 300,
-
     usage: "75kwh",
     total: "75,000៛",
-
-    status: "Paid",
-
+    status: "Pending",
     histories: [
       {
         key: "1",
@@ -131,28 +113,22 @@ export const CLIENTS: ClientRow[] = [
   {
     id: "03",
     key: "3",
-
     clientCode: "NP0392931",
     meterCode: "00019294",
-
     name: "ណាត សេង",
     gender: "ប្រុស",
-
-    phoneNumber: "012 345 444",
-
+    phone: "096 111 222",
+    phoneNumber: "096 111 222",
+    room: "B01",
+    moveInDate: "10/06/2023",
     installDate: "20 Mar 2020",
     lastDate: "10 Jan 2021",
-
     note: "N/A",
-
     oldReading: 123,
     newReading: 200,
-
     usage: "77kwh",
     total: "77,000៛",
-
-    status: "Paid",
-
+    status: "Active",
     histories: [
       {
         key: "1",
@@ -166,32 +142,25 @@ export const CLIENTS: ClientRow[] = [
       },
     ],
   },
-
   {
     id: "04",
     key: "4",
-
     clientCode: "NP0392932",
     meterCode: "00019295",
-
     name: "លាភ វិមាន",
     gender: "ស្រី",
-
-    phoneNumber: "012 345 444",
-
+    phone: "078 444 555",
+    phoneNumber: "078 444 555",
+    room: "B02",
+    moveInDate: "20/09/2023",
     installDate: "18 Apr 2020",
     lastDate: "10 Jan 2021",
-
     note: "Monthly customer",
-
     oldReading: 123,
     newReading: 240,
-
     usage: "77kwh",
     total: "84,700៛",
-
-    status: "Paid",
-
+    status: "MovedOut",
     histories: [
       {
         key: "1",
@@ -205,32 +174,25 @@ export const CLIENTS: ClientRow[] = [
       },
     ],
   },
-
   {
     id: "05",
     key: "5",
-
     clientCode: "NP0392933",
     meterCode: "00019296",
-
     name: "ស៊ីន មករា",
     gender: "ប្រុស",
-
-    phoneNumber: "012 345 444",
-
+    phone: "085 666 777",
+    phoneNumber: "085 666 777",
+    room: "C01",
+    moveInDate: "05/11/2023",
     installDate: "10 Jun 2020",
     lastDate: "12 Jan 2022",
-
     note: "VIP",
-
     oldReading: 123,
     newReading: 200,
-
     usage: "77kwh",
     total: "84,700៛",
-
-    status: "Paid",
-
+    status: "Active",
     histories: [
       {
         key: "1",
@@ -244,32 +206,25 @@ export const CLIENTS: ClientRow[] = [
       },
     ],
   },
-
   {
     id: "06",
     key: "6",
-
     clientCode: "NP0392934",
     meterCode: "00019297",
-
     name: "ប្រាក់ សេង",
     gender: "ប្រុស",
-
-    phoneNumber: "012 345 444",
-
+    phone: "093 888 999",
+    phoneNumber: "093 888 999",
+    room: "C02",
+    moveInDate: "01/02/2024",
     installDate: "22 Aug 2020",
     lastDate: "12 Jan 2022",
-
     note: "N/A",
-
     oldReading: 123,
     newReading: 200,
-
     usage: "77kwh",
     total: "84,700៛",
-
-    status: "Paid",
-
+    status: "Active",
     histories: [
       {
         key: "1",
