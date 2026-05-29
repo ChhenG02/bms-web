@@ -91,7 +91,9 @@ function InvoiceTemplate({
           }}
         >
           <div style={{ flex: 1 }}>
-            <InfoRow label="ក្រុមហ៊ុន" value="ពិស្ណុ អូតូ ថេក ឯ.ក" />
+            {/* <InfoRow label="ក្រុមហ៊ុន" value="ពិស្ណុ អូតូ ថេក ឯ.ក" /> */}
+            <InfoRow label="Company" value="Pisnuk Auto Tech" />
+
           </div>
 
           <h2
@@ -121,8 +123,11 @@ function InvoiceTemplate({
         >
           <div style={{ flex: 1 }}>
             <InfoRow
-              label="អាសយដ្ឋាន"
-              value="#330 ផ្លូវបេតុង ភូមិបន្លាស្អិត សង្កាត់ឃ្មួញ ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ"
+              // label="អាសយដ្ឋាន"
+              label="Address"
+              // value="#330 ផ្លូវបេតុង ភូមិបន្លាស្អិត សង្កាត់ឃ្មួញ ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ"
+              value="No.330, Phlov lum, Bonla S'et village, Sangkat Khmunh, Khan Sensok, Phnom Penh, Cambodia"
+
               multiline
             />
           </div>
@@ -132,7 +137,9 @@ function InvoiceTemplate({
               minWidth: 220,
             }}
           >
-            <RightInfoRow label="អតិថិជន" value={client.name} />
+            {/* <RightInfoRow label="អតិថិជន" value={client.name} /> */}
+            <RightInfoRow label="Client" value={client.name} />
+
           </div>
         </div>
 
@@ -146,7 +153,9 @@ function InvoiceTemplate({
           }}
         >
           <div style={{ flex: 1 }}>
-            <InfoRow label="ទំនាក់ទំនង" value="077 999 316" />
+            {/* <InfoRow label="ទំនាក់ទំនង" value="077 999 316" /> */}
+            <InfoRow label="Phone" value="077 999 316" />
+
           </div>
 
           <div
@@ -154,7 +163,9 @@ function InvoiceTemplate({
               minWidth: 220,
             }}
           >
-            <RightInfoRow label="ទំនាក់ទំនង" value={client.phoneNumber} />
+            {/* <RightInfoRow label="ទំនាក់ទំនង" value={client.phoneNumber} /> */}
+            <RightInfoRow label="Phone" value={client.phoneNumber} />
+
           </div>
         </div>
       </div>
@@ -183,7 +194,9 @@ function InvoiceTemplate({
               ល.រ
             </th>
 
-            <th style={th}>ពិពណ៌នា</th>
+            {/* <th style={th}>ពិពណ៌នា</th> */}
+            <th style={th}>Note</th>
+
 
             <th
               style={{
@@ -191,7 +204,9 @@ function InvoiceTemplate({
                 width: 170,
               }}
             >
-              ទំហំអគ្គិសនីដែលប្រើប្រាស់
+              {/* ទំហំអគ្គិសនីដែលប្រើប្រាស់ */}
+              Energy Usage
+
             </th>
 
             <th
@@ -200,7 +215,8 @@ function InvoiceTemplate({
                 width: 140,
               }}
             >
-              ទឹកប្រាក់
+              {/* ទឹកប្រាក់ */}
+              Amount
             </th>
           </tr>
         </thead>
@@ -218,7 +234,9 @@ function InvoiceTemplate({
               </td>
 
               <td style={td}>
-                {`ទូទាត់សេវាអគ្គិសនីដែលបានប្រើប្រាស់ចាប់ពី ${row.dateRange}`}
+                {/* {`ទូទាត់សេវាអគ្គិសនីដែលបានប្រើប្រាស់ចាប់ពី ${row.dateRange}`} */}
+                {`Pay for electricity used from ${row.dateRange}`}
+
               </td>
 
               <td
@@ -268,7 +286,8 @@ function InvoiceTemplate({
                 backgroundColor: "#f3f4f6",
               }}
             >
-              សរុប
+              {/* សរុប */}
+              Total
             </td>
 
             <td
@@ -299,9 +318,12 @@ function InvoiceTemplate({
               fontWeight: 700,
             }}
           >
-            ចេញដោយ:
+            {/* ចេញដោយ: */}
+            Issued by
           </span>{" "}
-          <span>ពិស្ណុ អូតូ ថេក ឯ.ក</span>
+          {/* <span>ពិស្ណុ អូតូ ថេក ឯ.ក</span> */}
+          <span>Pisnuk Auto Tech</span>
+
         </div>
 
         <div>
@@ -310,7 +332,8 @@ function InvoiceTemplate({
               fontWeight: 700,
             }}
           >
-            អតិថិជន:
+            {/* អតិថិជន: */}
+            Client:
           </span>{" "}
           <span>{client.name}</span>
         </div>
@@ -409,7 +432,9 @@ function SignatureLine() {
           paddingBottom: 2,
         }}
       >
-        ហត្ថលេខា:
+        {/* ហត្ថលេខា: */}
+        Signature:
+
       </span>
 
       <span

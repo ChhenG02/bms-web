@@ -19,40 +19,120 @@ export type NavigationItem = {
   group?: string;
 };
 
+// export const navigationItems: NavigationItem[] = [
+//   // {
+//   //   key: "/dashboard",
+//   //   label: "ផ្ទាំងគ្រប់គ្រង",
+//   //   title: "ផ្ទាំងគ្រប់គ្រង",
+//   //   path: "/dashboard",
+//   //   icon: <DesktopOutlined />,
+//   // },
+
+//   {
+//     key: "information-management",
+//     label: "គ្រប់គ្រងព័ត៌មាន",
+//     title: "គ្រប់គ្រងព័ត៌មាន",
+//     group: "group",
+//     children: [
+//       {
+//         key: "/bill",
+//         label: "​វិក្កយបត្រ",
+//         title: "​វិក្កយបត្រ",
+//         path: "/bill",
+//         icon: <FileTextOutlined />,
+//       },
+
+//             {
+//         key: "/client",
+//         label: "អតិថិជន",
+//         title: "អតិថិជន",
+//         path: "/client",
+//         icon: <TeamOutlined />,
+//       },
+//       {
+//         key: "/energy-usage",
+//         label: "ទំហំថាមពលប្រើប្រាស់",
+//         title: "របាយការណ៍",
+//         path: "/energy-usage",
+//         icon: <BarChartOutlined />,
+//       },
+//     ],
+//   },
+
+//   {
+//     key: "administration",
+//     label: "រដ្ឋបាល",
+//     title: "Administration",
+//     group: "group",
+//     children: [
+//       {
+//         key: "/users",
+//         label: "អ្នកប្រើប្រាស់",
+//         title: "អ្នកប្រើប្រាស់",
+//         path: "/users",
+//         icon: <UserOutlined />,
+//         // children: [
+//         //   {
+//         //     key: "/users",
+//         //     label: "គ្រប់គ្រងអ្នកប្រើប្រាស់",
+//         //     title: "អ្នកប្រើប្រាស់",
+//         //     path: "/users",
+//         //   },
+//         //   {
+//         //     key: "/permissions",
+//         //     label: "តួនាទី​ & សិទ្ធិ",
+//         //     title: "តួនាទី & សិទ្ធិ",
+//         //     path: "/permissions",
+//         //   },
+//         // ],
+//       },
+
+
+//     ],
+//   },
+//   {
+//     key: "/settings",
+//     label: "ការកំណត់",
+//     title: "ការកំណត់",
+//     path: "/settings",
+//     icon: <SettingOutlined />,
+//   },
+// ];
+
+
 export const navigationItems: NavigationItem[] = [
   // {
   //   key: "/dashboard",
-  //   label: "ផ្ទាំងគ្រប់គ្រង",
-  //   title: "ផ្ទាំងគ្រប់គ្រង",
+  //   label: "Dashboard",
+  //   title: "Dashboard",
   //   path: "/dashboard",
   //   icon: <DesktopOutlined />,
   // },
 
   {
     key: "information-management",
-    label: "គ្រប់គ្រងព័ត៌មាន",
-    title: "គ្រប់គ្រងព័ត៌មាន",
+    label: "Information",
+    title: "Information",
     group: "group",
     children: [
       {
         key: "/bill",
-        label: "​វិក្កយបត្រ",
-        title: "​វិក្កយបត្រ",
+        label: "Bill",
+        title: "Bill",
         path: "/bill",
         icon: <FileTextOutlined />,
       },
-
-            {
+      {
         key: "/client",
-        label: "អតិថិជន",
-        title: "អតិថិជន",
+        label: "Customer",
+        title: "Customer",
         path: "/client",
         icon: <TeamOutlined />,
       },
       {
         key: "/energy-usage",
-        label: "ទំហំថាមពលប្រើប្រាស់",
-        title: "របាយការណ៍",
+        label: "Energy Usage",
+        title: "Report",
         path: "/energy-usage",
         icon: <BarChartOutlined />,
       },
@@ -61,39 +141,37 @@ export const navigationItems: NavigationItem[] = [
 
   {
     key: "administration",
-    label: "រដ្ឋបាល",
+    label: "Administration",
     title: "Administration",
     group: "group",
     children: [
       {
         key: "/users",
-        label: "អ្នកប្រើប្រាស់",
-        title: "អ្នកប្រើប្រាស់",
+        label: "Users",
+        title: "Users",
         path: "/users",
         icon: <UserOutlined />,
         // children: [
         //   {
         //     key: "/users",
-        //     label: "គ្រប់គ្រងអ្នកប្រើប្រាស់",
-        //     title: "អ្នកប្រើប្រាស់",
+        //     label: "User Management",
+        //     title: "Users",
         //     path: "/users",
         //   },
         //   {
         //     key: "/permissions",
-        //     label: "តួនាទី​ & សិទ្ធិ",
-        //     title: "តួនាទី & សិទ្ធិ",
+        //     label: "Roles & Permissions",
+        //     title: "Roles & Permissions",
         //     path: "/permissions",
         //   },
         // ],
       },
-
-
     ],
   },
   {
     key: "/settings",
-    label: "ការកំណត់",
-    title: "ការកំណត់",
+    label: "Settings",
+    title: "Settings",
     path: "/settings",
     icon: <SettingOutlined />,
   },

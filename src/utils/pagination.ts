@@ -1,3 +1,116 @@
+// import type { TablePaginationConfig } from "antd";
+
+// type BuildTablePaginationProps = {
+//   page: number;
+//   pageSize?: number;
+//   total: number;
+// };
+
+// export function buildPeopleTablePagination({
+//   page,
+//   pageSize = 10,
+//   total,
+// }: BuildTablePaginationProps): TablePaginationConfig {
+//   return {
+//     current: page,
+//     pageSize,
+//     total,
+
+//     showSizeChanger: {
+//       options: [
+//         {
+//           label: "5/ទំព័រ",
+//           value: 5,
+//         },
+//         {
+//           label: "10/ទំព័រ",
+//           value: 10,
+//         },
+//         {
+//           label: "20/ទំព័រ",
+//           value: 20,
+//         },
+//         {
+//           label: "50/ទំព័រ",
+//           value: 50,
+//         },
+//       ],
+//     },
+
+//     showTotal: (total) => `ចំនួន ${total} នាក់`,
+//   };
+// }
+
+// export function buildHistoryTablePagination({
+//   page,
+//   pageSize = 10,
+//   total,
+// }: BuildTablePaginationProps): TablePaginationConfig {
+//   return {
+//     current: page,
+//     pageSize,
+//     total,
+
+//     showSizeChanger: {
+//       options: [
+//         {
+//           label: "5/ទំព័រ",
+//           value: 5,
+//         },
+//         {
+//           label: "10/ទំព័រ",
+//           value: 10,
+//         },
+//         {
+//           label: "20/ទំព័រ",
+//           value: 20,
+//         },
+//         {
+//           label: "50/ទំព័រ",
+//           value: 50,
+//         },
+//       ],
+//     },
+
+//     showTotal: (total) => `ចំនួន ${total} ប្រវត្តិ`,
+//   };
+// }
+
+// export function buildEnergyUsageTablePagination({
+//   page,
+//   pageSize = 10,
+//   total,
+// }: BuildTablePaginationProps): TablePaginationConfig {
+//   return {
+//     current: page,
+//     pageSize,
+//     total,
+
+//     showSizeChanger: {
+//       options: [
+//         {
+//           label: "5/ទំព័រ",
+//           value: 5,
+//         },
+//         {
+//           label: "10/ទំព័រ",
+//           value: 10,
+//         },
+//         {
+//           label: "20/ទំព័រ",
+//           value: 20,
+//         },
+//         {
+//           label: "50/ទំព័រ",
+//           value: 50,
+//         },
+//       ],
+//     },
+
+//     showTotal: (total) => `ចំនួន ${total} ​វិក្កយបត្រ`,
+//   };
+// }
+
 import type { TablePaginationConfig } from "antd";
 
 type BuildTablePaginationProps = {
@@ -19,25 +132,25 @@ export function buildPeopleTablePagination({
     showSizeChanger: {
       options: [
         {
-          label: "5/ទំព័រ",
+          label: "5 / page",
           value: 5,
         },
         {
-          label: "10/ទំព័រ",
+          label: "10 / page",
           value: 10,
         },
         {
-          label: "20/ទំព័រ",
+          label: "20 / page",
           value: 20,
         },
         {
-          label: "50/ទំព័រ",
+          label: "50 / page",
           value: 50,
         },
       ],
     },
 
-    showTotal: (total) => `ចំនួន ${total} នាក់`,
+    showTotal: (total) => `Total ${total} people`,
   };
 }
 
@@ -54,25 +167,25 @@ export function buildHistoryTablePagination({
     showSizeChanger: {
       options: [
         {
-          label: "5/ទំព័រ",
+          label: "5 / page",
           value: 5,
         },
         {
-          label: "10/ទំព័រ",
+          label: "10 / page",
           value: 10,
         },
         {
-          label: "20/ទំព័រ",
+          label: "20 / page",
           value: 20,
         },
         {
-          label: "50/ទំព័រ",
+          label: "50 / page",
           value: 50,
         },
       ],
     },
 
-    showTotal: (total) => `ចំនួន ${total} ប្រវត្តិ`,
+    showTotal: (total) => `Total ${total} records`,
   };
 }
 
@@ -89,24 +202,24 @@ export function buildEnergyUsageTablePagination({
     showSizeChanger: {
       options: [
         {
-          label: "5/ទំព័រ",
+          label: "5 / page",
           value: 5,
         },
         {
-          label: "10/ទំព័រ",
+          label: "10 / page",
           value: 10,
         },
         {
-          label: "20/ទំព័រ",
+          label: "20 / page",
           value: 20,
         },
         {
-          label: "50/ទំព័រ",
+          label: "50 / page",
           value: 50,
         },
       ],
     },
 
-    showTotal: (total) => `ចំនួន ${total} ​វិក្កយបត្រ`,
+    showTotal: (total) => `Total ${total} invoices`,
   };
 }

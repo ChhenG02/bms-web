@@ -1,51 +1,103 @@
+// import type { PickerLocale } from "antd/es/date-picker/generatePicker";
+// import enUS from "antd/es/date-picker/locale/en_US";
+
+// export const khmerDatePickerLocale: PickerLocale = {
+//   ...enUS,
+
+//   lang: {
+//     ...enUS.lang,
+
+//     locale: "km-KH",
+
+//     placeholder: "ថ្ងៃ/ខែ/ឆ្នាំ",
+
+//     rangePlaceholder: [
+//       "ថ្ងៃចាប់ផ្ដើម",
+//       "ថ្ងៃបញ្ចប់",
+//     ],
+
+//     today: "ថ្ងៃនេះ",
+
+//     now: "ឥឡូវនេះ",
+
+//     backToToday: "ត្រឡប់ទៅថ្ងៃនេះ",
+
+//     ok: "យល់ព្រម",
+
+//     clear: "សម្អាត",
+
+//     month: "ខែ",
+
+//     year: "ឆ្នាំ",
+
+//     timeSelect: "ជ្រើសរើសម៉ោង",
+
+//     dateSelect: "ជ្រើសរើសកាលបរិច្ឆេទ",
+
+//     monthSelect: "ជ្រើសរើសខែ",
+
+//     yearSelect: "ជ្រើសរើសឆ្នាំ",
+
+//     decadeSelect: "ជ្រើសរើសទសវត្សរ៍",
+
+//     previousMonth: "ខែមុន",
+
+//     nextMonth: "ខែបន្ទាប់",
+
+//     previousYear: "ឆ្នាំមុន",
+
+//     nextYear: "ឆ្នាំបន្ទាប់",
+//   },
+// };
+
 import type { PickerLocale } from "antd/es/date-picker/generatePicker";
 import enUS from "antd/es/date-picker/locale/en_US";
 
-export const khmerDatePickerLocale: PickerLocale = {
+export const englishDatePickerLocale: PickerLocale = {
   ...enUS,
 
   lang: {
     ...enUS.lang,
 
-    locale: "km-KH",
+    locale: "en-US",
 
-    placeholder: "ថ្ងៃ/ខែ/ឆ្នាំ",
+    placeholder: "DD/MM/YYYY",
 
     rangePlaceholder: [
-      "ថ្ងៃចាប់ផ្ដើម",
-      "ថ្ងៃបញ្ចប់",
+      "Start Date",
+      "End Date",
     ],
 
-    today: "ថ្ងៃនេះ",
+    today: "Today",
 
-    now: "ឥឡូវនេះ",
+    now: "Now",
 
-    backToToday: "ត្រឡប់ទៅថ្ងៃនេះ",
+    backToToday: "Back to Today",
 
-    ok: "យល់ព្រម",
+    ok: "OK",
 
-    clear: "សម្អាត",
+    clear: "Clear",
 
-    month: "ខែ",
+    month: "Month",
 
-    year: "ឆ្នាំ",
+    year: "Year",
 
-    timeSelect: "ជ្រើសរើសម៉ោង",
+    timeSelect: "Select Time",
 
-    dateSelect: "ជ្រើសរើសកាលបរិច្ឆេទ",
+    dateSelect: "Select Date",
 
-    monthSelect: "ជ្រើសរើសខែ",
+    monthSelect: "Select Month",
 
-    yearSelect: "ជ្រើសរើសឆ្នាំ",
+    yearSelect: "Select Year",
 
-    decadeSelect: "ជ្រើសរើសទសវត្សរ៍",
+    decadeSelect: "Select Decade",
 
-    previousMonth: "ខែមុន",
+    previousMonth: "Previous Month",
 
-    nextMonth: "ខែបន្ទាប់",
+    nextMonth: "Next Month",
 
-    previousYear: "ឆ្នាំមុន",
+    previousYear: "Previous Year",
 
-    nextYear: "ឆ្នាំបន្ទាប់",
+    nextYear: "Next Year",
   },
 };
