@@ -779,8 +779,6 @@ import {
   CheckOutlined,
   DeleteOutlined,
   DownloadOutlined,
-  EditOutlined,
-  EyeOutlined,
   FilterOutlined,
   MoreOutlined,
   PlusOutlined,
@@ -802,6 +800,9 @@ import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { buildEnergyUsageTablePagination } from "../../utils/pagination";
 import { GenerateBillsModal, type GenerateBillsFormValues } from "./GenerateBillsModal";
+import { generatePDFBlobUrl } from "../../utils/handlePreviewPDF";
+import PDFPreviewOverlay from "../../utils/PDFPreviewOverlay";
+import InvoiceTemplate from "../../components/InvoiceTemplate";
 
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -1019,6 +1020,8 @@ function BillPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(7);
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string>();
 
   const [debouncedSearch] = useDebounce(search, 300);
 
@@ -1200,8 +1203,7 @@ function BillPage() {
           trigger={["click"]}
           menu={{
             items: [
-              { key: "view", icon: <EyeOutlined />, label: "View Details" },
-              { key: "edit", icon: <EditOutlined />, label: "Edit" },
+              // { key: "view", icon: <EyeOutlined />, label: "View Details" },
               { key: "download", icon: <DownloadOutlined />, label: "Download PDF" },
               { type: "divider" },
               {
@@ -1211,8 +1213,15 @@ function BillPage() {
                 danger: true,
               },
             ],
-            onClick: ({ key }) => {
-              if (key === "delete") {
+            onClick: async ({ key }) => {
+              if (key === "download") {
+                const url = await generatePDFBlobUrl({
+                  elementId: `invoice-pdf-${record.id}`,
+                });
+                if (!url) return;
+                setPdfUrl(url);
+                setPreviewOpen(true);
+              } else if (key === "delete") {
                 modal.confirm({
                   title: "Confirm Deletion",
                   content: (
@@ -1397,12 +1406,12 @@ function BillPage() {
 
             {/* Action Buttons */}
             <div style={{ display: "flex", gap: 10 }}>
-              <Button
+              {/* <Button
                 icon={<DownloadOutlined />}
                 style={{ height: 42, borderRadius: 10 }}
               >
                 Export
-              </Button>
+              </Button> */}
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
@@ -1499,6 +1508,77 @@ function BillPage() {
         onCancel={() => setGenerateModalOpen(false)}
         onGenerate={handleGenerateBills}
       />
+
+      <PDFPreviewOverlay
+        open={previewOpen}
+        pdfUrl={pdfUrl}
+        title="Exported_Bills.pdf"
+        onClose={() => {
+          setPreviewOpen(false);
+          if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+          }
+        }}
+      />
+      <div style={{ position: "fixed", left: "-99999px", top: 0 }}>
+        {BILLS.length > 0 && (
+          <InvoiceTemplate
+            invoiceId="billpage-export-pdf"
+            client={{
+              id: BILLS[0].clientId,
+              name: BILLS[0].clientName,
+              phoneNumber: "077 999 316",
+              installDate: "",
+              lastDate: "",
+              oldReading: BILLS[0].oldReading,
+              newReading: BILLS[0].newReading,
+              usage: BILLS[0].usage,
+              total: BILLS[0].total,
+              status: "Active",
+              histories: [],
+            } as any}
+            history={{
+              key: BILLS[0].id,
+              no: BILLS[0].id,
+              dateRange: BILLS[0].monthLabel,
+              oldReading: BILLS[0].oldReading,
+              newReading: BILLS[0].newReading,
+              usage: BILLS[0].usage,
+              total: BILLS[0].total,
+              status: BILLS[0].status,
+            } as any}
+          />
+        )}
+        {BILLS.map((row) => (
+          <InvoiceTemplate
+            key={row.id}
+            invoiceId={`invoice-pdf-${row.id}`}
+            client={{
+              id: row.clientId,
+              name: row.clientName,
+              phoneNumber: "077 999 316",
+              installDate: "",
+              lastDate: "",
+              oldReading: row.oldReading,
+              newReading: row.newReading,
+              usage: row.usage,
+              total: row.total,
+              status: "Active",
+              histories: [],
+            } as any}
+            history={{
+              key: row.id,
+              no: row.id,
+              dateRange: row.monthLabel,
+              oldReading: row.oldReading,
+              newReading: row.newReading,
+              usage: row.usage,
+              total: row.total,
+              status: row.status,
+            } as any}
+          />
+        ))}
+      </div>
 
       <style>{`
         .ant-table { background: transparent !important; }
